@@ -1,6 +1,25 @@
 #include "gl_framework.hpp"
 #include <GL/glu.h>
 
+
+#define head 1
+#define neck 2
+#define torso 3
+#define right_upper_arm 4
+#define left_upper_arm 5
+#define right_lower_arm 6
+#define left_lower_arm 7
+#define right_thigh 8
+#define left_thigh 9
+#define right_leg 10
+#define left_leg 11
+#define right_hand 12
+#define left_hand 13
+#define right_foot 14
+#define left_foot 15
+
+
+
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_QUADS); 
@@ -84,33 +103,52 @@ void drawCuboidSolid(float l, float b, float h){
   glEnd();
 }
 
-//~ void struct_bust(void){
-	//~ glNewList(bust, GL_COMPILE);
-		//~ glColor3f(1.0,1.0,1.0);
-		//~ glScalef(1.8,1.0,1.0);
-		//~ drawCubeSolid();
-		//~ glTranslatef(0.0,-0.75,0.0);
-		//~ glScalef(1.0,1.0,1.0);
-		//~ SetMaterial(mat_specularYELLOW, mat_ambientYELLOW, mat_diffuseYELLOW, mat_shininessYELLOW);
-		//~ glColor3f(1.0,1.0,0.0);
-		//~ glutSolidCube(0.5);
-		//~ //glDisable(GL_LIGHT0);
-		//~ 
-		//~ glTranslatef(0,0.3,0);
-		//~ SetMaterial(mat_specularGRAY, mat_ambientGRAY, mat_diffuseGRAY, mat_shininessGRAY);
-		//~ glColor3ub(128,128,128);
-		//~ glutSolidSphere(0.5,5,5);
-		//~ 
-		//~ /*SetMaterial(mat_specularBLUE, mat_ambientBLUE, mat_diffuseBLUE, mat_shininessBLUE);
-		//~ glColor3ub(0,0,255);
-		//~ glScalef(1.0,0.2,1.0);
-		//~ glutSolidCube(1.0);*/
-		//~ glScalef(1.0,0.2,1.0);
-		
-	//~ glEndList();
-	//~ 
-//~ }
 
+
+void struct_head(void){
+	glNewList(head, GL_COMPILE);
+		glPushMatrix();
+			glColor4f(0.5, 0.0, 0.5, 1.0);
+			drawCuboidSolid(0.3,0.5,0.3);
+			glPushMatrix();
+				glTranslatef(0, 0.35, 0.15);
+				glColor4f(1, 1, 1, 1);
+				glPushMatrix();
+					glTranslatef(0.15, 0, 0);
+					drawCuboidSolid(0.1, 0.2, 0.1);
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-0.15, 0, 0);
+					drawCuboidSolid(0.1, 0.2, 0.1);
+				glPopMatrix();
+			glPopMatrix();
+		glPopMatrix();
+	glEndList();
+	
+}
+
+void struct_neck(void){
+	glNewList(neck, GL_COMPILE);
+		glColor4f(0.5, 0.0, 0.5, 1.0);
+		drawCuboidSolid(0.1, 0.2, 0.1);
+	glEndList();
+}
+
+void struct_torso(void){
+	glNewList(torso, GL_COMPILE);
+		glColor4f(0.5, 0.0, 0.5, 1.0);
+		drawCuboidSolid(0.7, 0.4, 0.3);
+		
+		glTranslatef(0, -0.35, 0);
+		drawCuboidSolid(0.5, 0.3, 0.3);
+	glEndList();
+}
+
+void init_structures(){
+	struct_head();
+	struct_neck();
+	struct_torso();
+}
 
 void renderGL(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -134,18 +172,21 @@ void renderGL(void){
 
 
 
-  glColor4f(0.5, 0.0, 0.5, 1.0);
+  
 
-  glScalef(0.2,0.2,0.2);
+  glScalef(0.3,0.3,0.3);
   glRotatef( 35.264, 1.0, 0.0, 0.0);
-  glRotatef( -35.0, 0.0, 1.0, 0.0);
+  glRotatef( -45.0, 0.0, 1.0, 0.0);
 
-  drawCuboidSolid(0.5, 0.5, 0.5);
-  glPushMatrix();
-	glTranslatef(1.0, 1.0, 4.0);
-	glRotatef(150.0, 1.0, 0.0, 0.0);
-	drawCuboidSolid(0.5, 1.0, 0.5);
-  glPopMatrix();
+  //~ drawCuboidSolid(0.5, 0.5, 0.5);
+  //~ glPushMatrix();
+	//~ glTranslatef(1.0, 1.0, 4.0);
+	//~ glRotatef(150.0, 1.0, 0.0, 0.0);
+	//~ drawCuboidSolid(0.5, 1.0, 0.5);
+  //~ glPopMatrix();
+  //~ glRotatef(30, 0, 1, 0);
+  
+  glCallList(torso);
 
 }
 
@@ -196,7 +237,7 @@ int main(int argc, char** argv)
 
   //Initialize GL state
   csX75::initGL();
-  
+  init_structures();
   // Loop until the user closes the window
   while (glfwWindowShouldClose(window) == 0)
     {
