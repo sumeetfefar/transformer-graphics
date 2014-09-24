@@ -2,11 +2,6 @@
 
 namespace csX75
 {
-	
-  GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };                 // Ambient Light Values ( NEW )
-  GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };              // Diffuse Light Values ( NEW )
-  GLfloat LightPosition[]= { 0.0f, 0.0f, 2.0f, 1.0f };                 // Light Position ( NEW )
-
   //! Initialize GL State
   void initGL(void)
   {
@@ -18,9 +13,7 @@ namespace csX75
     glDepthFunc(GL_LESS);
     //Enable depth testing
     glEnable(GL_DEPTH_TEST); 
-    
 
-    
     glMatrixMode(GL_MODELVIEW);
     //Enable Gourard shading
     glShadeModel(GL_SMOOTH);

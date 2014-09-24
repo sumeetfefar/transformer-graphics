@@ -44,6 +44,13 @@ void drawCubeSolid(){
     glVertex3f(  0.5,  0.5, 0.5 );
     glVertex3f( -0.5,  0.5, 0.5 );
     glVertex3f( -0.5, -0.5, 0.5 );
+    
+    glNormal3d(0, 0, -1); // Back
+    glVertex3f( -0.5, -0.5, -0.5 );
+    glVertex3f( -0.5,  0.5, -0.5 );
+    glVertex3f(  0.5,  0.5, -0.5 );
+    glVertex3f(  0.5, -0.5, -0.5 );   
+    
   
     glNormal3d(1, 0, 0);// RIGHT
     glVertex3f( 0.5, -0.5, -0.5 );
@@ -77,7 +84,6 @@ void renderGL(void){
   glLoadIdentity();
   glEnable(GL_CULL_FACE); 
 
-  
   glEnable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
   glEnable(GL_AUTO_NORMAL);
@@ -96,31 +102,18 @@ void renderGL(void){
 
 
   glColor4f(0.5, 0.0, 0.5, 1.0);
-  //~ glBegin(GL_TRIANGLES);
-  //~ glVertex3f(-0.5f,  0.5f,  0.0f);
-  //~ glVertex3f(0.5f, -0.5f,  0.0f);
-  //~ glVertex3f(-0.5f, -0.5f,  0.0f);
-  //~ glEnd();
-  //~ glColor4f(0.0, 1.0, 1.0, 1.0);
-  //~ glBegin(GL_TRIANGLES);
-  //~ glVertex3f(-0.5f,  0.5f,  0.0f);
-  //~ glVertex3f(0.5f, -0.5f,  0.0f);
-  //~ glVertex3f(0.5f, 0.5f, 0.0f);
-  //~ glEnd();
-  //~ glScalef(2, 2, 2);
-  //~ drawCube();
+
   glScalef(0.2,0.2,0.2);
   glRotatef( 35.264, 1.0, 0.0, 0.0);
   glRotatef( -35.0, 0.0, 1.0, 0.0);
-  //~ glBegin(GL_QUADS);
-  //~ glVertex3f(-0.5f, -0.5f, 0.5f);
-  //~ glVertex3f(0.5f, -0.5f, 0.5f);
-  //~ glVertex3f(0.5f, 0.5f, 0.5f);
-  //~ glVertex3f(-0.5f, 0.5f, 0.5f);
-  //~ glEnd();
+
   drawCubeSolid();
-  //~ glColor4f(0.0, 0.0, 0.0, 1.0);
-  //~ drawCubeWireframe();
+  glPushMatrix();
+	glTranslatef(1.0, 1.0, 4.0);
+	glRotatef(100.0, 1.0, 0.0, 0.0);
+	drawCubeSolid();
+  glPopMatrix();
+
   
   
 }
