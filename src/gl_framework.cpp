@@ -13,11 +13,13 @@ namespace csX75
     //Set framebuffer clear color
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     //Set depth buffer furthest depth
-    glClearDepth(1.0);
+    glClearDepth(1);
     //Set depth test to less-than
     glDepthFunc(GL_LESS);
     //Enable depth testing
     glEnable(GL_DEPTH_TEST); 
+    
+
     
     glMatrixMode(GL_MODELVIEW);
     //Enable Gourard shading
