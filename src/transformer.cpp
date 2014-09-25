@@ -70,42 +70,42 @@ void drawCubeWireframe(){
 void drawCuboidSolid(float l, float b, float h){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_QUADS);
-    glColor4f(1,0,0,1);
+    // glColor4f(1,0,0,1);
     glNormal3f(0, 0, 1);// Front
     glVertex3f(  l/2, -b/2, h/2 );
     glVertex3f(  l/2,  b/2, h/2 );
     glVertex3f( -l/2,  b/2, h/2 );
     glVertex3f( -l/2, -b/2, h/2 );
     
-    glColor4f(0,1,0,1);
+    // glColor4f(0,1,0,1);
     glNormal3f(0, 0, -1); // Back
     glVertex3f( -l/2, -b/2, -h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f(  l/2,  b/2, -h/2 );
     glVertex3f(  l/2, -b/2, -h/2 );   
     
-    glColor4f(0,0,1,1);
+    // glColor4f(0,0,1,1);
     glNormal3f(1, 0, 0);// RIGHT
     glVertex3f( l/2, -b/2, -h/2 );
     glVertex3f( l/2,  b/2, -h/2 );
     glVertex3f( l/2,  b/2,  h/2 );
     glVertex3f( l/2, -b/2,  h/2 );
     
-    glColor4f(1,1,0,1);
+    // glColor4f(1,1,0,1);
     glNormal3f(-1, 0, 0);// LEFT
     glVertex3f( -l/2, -b/2,  h/2 );
     glVertex3f( -l/2,  b/2,  h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f( -l/2, -b/2, -h/2 );
   
-    glColor4f(1,0,1,1);
+    // glColor4f(1,0,1,1);
     glNormal3f(0, 1, 0);// TOP
     glVertex3f(  l/2,  b/2,  h/2 );
     glVertex3f(  l/2,  b/2, -h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f( -l/2,  b/2,  h/2 );
   
-    glColor4f(0,1,1,1);
+    // glColor4f(0,1,1,1);
     glNormal3f(0, -1, 0);// BOTTOM
     glVertex3f(  l/2, -b/2, -h/2 );
     glVertex3f(  l/2, -b/2,  h/2 );
@@ -148,16 +148,16 @@ void struct_neck(void){
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
 		
-		drawCuboidSolid(0.7, 0.2, 0.3);
+		drawCuboidSolid(0.7, 0.4, 0.3);
 		
 		glTranslatef(0, -0.35, 0);
-		drawCuboidSolid(0.5, 0.2, 0.3);
+		drawCuboidSolid(0.5, 0.3, 0.3);
 	glEndList();
 }
 
 void init_structures(){
-	// struct_head();
-	// struct_neck();
+	struct_head();
+	struct_neck();
 	struct_torso();
 }
 
