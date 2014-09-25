@@ -18,6 +18,20 @@
 #define right_foot 14
 #define left_foot 15
 
+class vector{
+	public:
+	float x, y, z;
+	
+	vector(){
+		;
+	}
+	vector(float xx, float yy, float zz){
+		x = xx;
+		y = yy;
+		z = zz;
+	}
+};
+
 float y_angle = -45;
 float x_angle = 35.264;
 
@@ -25,8 +39,11 @@ float x_angle = 35.264;
 //~ float x_angle = 0;
 
 float torso_width, torso_length;
-float upper_arm_length = 0.4, lower_arm_length = 0.5;
-float thigh_length = 0.6, leg_length = 0.6;
+
+vector upper_arm_size(0.15, 0.4, 0.15), lower_arm_size(0.11, 0.5, 0.11);
+vector thigh_size(0.15, 0.6, 0.15), leg_size(0.12, 0.6, 0.12);
+vector hand(0.1, 0.03, 0.15), foot(0.1, 0.05, 0.2);
+
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -149,7 +166,6 @@ void struct_neck(void){
 
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
-		
 		drawCuboidSolid(0.7, 0.4, 0.3);
 		
 		glTranslatef(0, -0.35, 0);
@@ -159,38 +175,82 @@ void struct_torso(void){
 
 void struct_right_upper_arm(void){
 	glNewList(right_upper_arm, GL_COMPILE);
-		drawCuboidSolid(0.15, upper_arm_length, 0.15);
+		drawCuboidSolid(upper_arm_size.x, upper_arm_size.y, upper_arm_size.z);
 	glEndList();
 }
 
 void struct_right_lower_arm(void){
 	glNewList(right_lower_arm, GL_COMPILE);
-		drawCuboidSolid(0.11, lower_arm_length, 0.11);
+		drawCuboidSolid(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
 	glEndList();
 }
 
 void struct_left_upper_arm(void){
 	glNewList(left_upper_arm, GL_COMPILE);
-		drawCuboidSolid(0.15, upper_arm_length, 0.15);
+		drawCuboidSolid(upper_arm_size.x, upper_arm_size.y, upper_arm_size.z);
 	glEndList();
 }
 
 void struct_left_lower_arm(void){
 	glNewList(left_lower_arm, GL_COMPILE);
-		drawCuboidSolid(0.11, lower_arm_length, 0.11);
+		drawCuboidSolid(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
 	glEndList();
 }
 
 void struct_right_thigh(void){
 	glNewList(right_thigh, GL_COMPILE);
-		drawCuboidSolid(0.15, thigh_length, 0.15);
+		drawCuboidSolid(thigh_size.x, thigh_size.y, thigh_size.z);
 	glEndList();
 }
 
 void struct_right_leg(void){
 	glNewList(right_leg, GL_COMPILE);
-		drawCuboidSolid(0.12, leg_length, 0.12);
+		drawCuboidSolid(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
+}
+
+void struct_left_thigh(void){
+	glNewList(left_thigh, GL_COMPILE);
+		drawCuboidSolid(thigh_size.x, thigh_size.y, thigh_size.z);
+	glEndList();
+}
+
+void struct_left_leg(void){
+	glNewList(left_leg, GL_COMPILE);
+		drawCuboidSolid(leg_size.x, leg_size.y, leg_size.z);
+	glEndList();
+}
+
+void struct_left_hand(void){
+	glNewList(left_hand, GL_COMPILE);
+		glTranslatef(0, 0, hand.z/2);
+		glRotatef(45, 1, 0, 0);
+		drawCuboidSolid(hand.x, hand.y, hand.z);
+	glEndList();
+}
+
+void struct_left_foot(void){
+	glNewList(left_foot, GL_COMPILE);
+		drawCuboidSolid(foot.x, foot.y, foot.z);
+	glEndList();
+}
+
+void struct_right_hand(void){
+	glNewList(right_hand, GL_COMPILE);
+		glTranslatef(0, 0, hand.z/2);
+		glRotatef(45, 1, 0, 0);
+		drawCuboidSolid(hand.x, hand.y, hand.z);
+	glEndList();
+}
+
+void struct_right_foot(void){
+	glNewList(right_foot, GL_COMPILE);
+		drawCuboidSolid(foot.x, foot.y, foot.z);
+	glEndList();
+}
+
+void draw_robot(){
+	
 }
 
 void init_structures(){
@@ -203,6 +263,12 @@ void init_structures(){
 	struct_left_lower_arm();
 	struct_right_thigh();
 	struct_right_leg();
+	struct_left_thigh();
+	struct_left_leg();
+	struct_left_hand();
+	struct_left_foot();
+	struct_right_hand();
+	struct_right_foot();
 }
 
 void initGL(void){
@@ -228,18 +294,16 @@ void initGL(void){
 	GLfloat light_position[] = { 1.0f, 0.5f, 0, 0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-
-
-	glMatrixMode(GL_MODELVIEW);
-	gluPerspective(120,1,0.1,10);
-	gluLookAt(0,0,1, 0, 0, 0, 0, 1,0);
 }
 
 void renderGL(void){
   
 	initGL();
 	//~ glTranslatef(0, 0, -1);
-
+	glMatrixMode(GL_MODELVIEW);
+	gluPerspective(120,1,0.1,10);
+	gluLookAt(0,0,1, 0, 0, 0, 0, 1,0);
+	
 	glRotatef( x_angle, 1.0, 0.0, 0.0);
 	glRotatef( y_angle, 0.0, 1.0, 0.0);
 
@@ -251,17 +315,19 @@ void renderGL(void){
 	//~ glPopMatrix();
 	//~ glRotatef(30, 0, 1, 0);
 
-	glCallList(right_upper_arm);
-	glPushMatrix();
-		glTranslatef(0, -(upper_arm_length+lower_arm_length)/2, 0);
-		glCallList(right_lower_arm);
-	glPopMatrix();
+	//~ glCallList(right_upper_arm);
+	//~ glPushMatrix();
+		//~ glTranslatef(0, -(upper_arm_size.y+lower_arm_size.y)/2, 0);
+		//~ glCallList(right_lower_arm);
+	//~ glPopMatrix();
 	
 	//~ glCallList(right_thigh);
 	//~ glPushMatrix();
-		//~ glTranslatef(0, -(thigh_length+leg_length)/2, 0);
+		//~ glTranslatef(0, -(thigh_size.y+leg_size.y)/2, 0);
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
+	
+	glCallList(left_foot);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
