@@ -18,7 +18,8 @@
 #define right_foot 14
 #define left_foot 15
 
-
+float y_angle = -45;
+float x_angle = 35.264;
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -175,8 +176,8 @@ void renderGL(void){
   
 
   glScalef(0.3,0.3,0.3);
-  glRotatef( 35.264, 1.0, 0.0, 0.0);
-  glRotatef( -45.0, 0.0, 1.0, 0.0);
+  glRotatef( x_angle, 1.0, 0.0, 0.0);
+  glRotatef( y_angle, 0.0, 1.0, 0.0);
 
   //~ drawCuboidSolid(0.5, 0.5, 0.5);
   //~ glPushMatrix();
@@ -188,6 +189,20 @@ void renderGL(void){
   
   glCallList(torso);
 
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+	//!Close the window if the ESC key was pressed
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+		y_angle -= 10;
+	else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+		y_angle += 10;
+	else if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+		x_angle -= 10;
+	else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+	x_angle += 10;
 }
 
 int main(int argc, char** argv)
@@ -228,7 +243,7 @@ int main(int argc, char** argv)
   std::cout<<"GLSL Version: "<<glGetString (GL_SHADING_LANGUAGE_VERSION)<<std::endl;
 
   //Keyboard Callback
-  glfwSetKeyCallback(window, csX75::key_callback);
+  glfwSetKeyCallback(window, key_callback);
   //Framebuffer resize callback
   glfwSetFramebufferSizeCallback(window, csX75::framebuffer_size_callback);
 

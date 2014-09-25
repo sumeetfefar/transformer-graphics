@@ -10,9 +10,10 @@ namespace csX75
     //Set depth buffer furthest depth
     glClearDepth(1);
     //Set depth test to less-than
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
     //Enable depth testing
     glEnable(GL_DEPTH_TEST); 
+    glDepthRange(0,1);
 
     glMatrixMode(GL_MODELVIEW);
     //Enable Gourard shading
@@ -33,12 +34,12 @@ namespace csX75
   }
   
   //!GLFW keyboard callback
-  void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-  {
-    //!Close the window if the ESC key was pressed
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-      glfwSetWindowShouldClose(window, GL_TRUE);
-  }
+  //~ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+  //~ {
+    //~ //!Close the window if the ESC key was pressed
+    //~ if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+      //~ glfwSetWindowShouldClose(window, GL_TRUE);
+  //~ }
 };  
   
 
