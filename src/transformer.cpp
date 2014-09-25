@@ -1,5 +1,7 @@
 #include "gl_framework.hpp"
 #include <GL/glu.h>
+#include <GL/gl.h>
+
 
 
 #define head 1
@@ -18,8 +20,11 @@
 #define right_foot 14
 #define left_foot 15
 
-float y_angle = -45;
-float x_angle = 35.264;
+// float y_angle = -45;
+// float x_angle = 35.264;
+
+float y_angle = 0;
+float x_angle = 0;
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -64,39 +69,44 @@ void drawCubeWireframe(){
 
 void drawCuboidSolid(float l, float b, float h){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_QUADS); 
-    glNormal3d(0, 0, 1);// Front
+	glBegin(GL_QUADS);
+    glColor4f(1,0,0,1);
+    glNormal3f(0, 0, 1);// Front
     glVertex3f(  l/2, -b/2, h/2 );
     glVertex3f(  l/2,  b/2, h/2 );
     glVertex3f( -l/2,  b/2, h/2 );
     glVertex3f( -l/2, -b/2, h/2 );
     
-    glNormal3d(0, 0, -1); // Back
+    glColor4f(0,1,0,1);
+    glNormal3f(0, 0, -1); // Back
     glVertex3f( -l/2, -b/2, -h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f(  l/2,  b/2, -h/2 );
     glVertex3f(  l/2, -b/2, -h/2 );   
     
-  
-    glNormal3d(1, 0, 0);// RIGHT
+    glColor4f(0,0,1,1);
+    glNormal3f(1, 0, 0);// RIGHT
     glVertex3f( l/2, -b/2, -h/2 );
     glVertex3f( l/2,  b/2, -h/2 );
     glVertex3f( l/2,  b/2,  h/2 );
     glVertex3f( l/2, -b/2,  h/2 );
-  
-    glNormal3d(-1, 0, 0);// LEFT
+    
+    glColor4f(1,1,0,1);
+    glNormal3f(-1, 0, 0);// LEFT
     glVertex3f( -l/2, -b/2,  h/2 );
     glVertex3f( -l/2,  b/2,  h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f( -l/2, -b/2, -h/2 );
   
-    glNormal3d(0, 1, 0);// TOP
+    glColor4f(1,0,1,1);
+    glNormal3f(0, 1, 0);// TOP
     glVertex3f(  l/2,  b/2,  h/2 );
     glVertex3f(  l/2,  b/2, -h/2 );
     glVertex3f( -l/2,  b/2, -h/2 );
     glVertex3f( -l/2,  b/2,  h/2 );
   
-    glNormal3d(0, -1, 0);// BOTTOM
+    glColor4f(0,1,1,1);
+    glNormal3f(0, -1, 0);// BOTTOM
     glVertex3f(  l/2, -b/2, -h/2 );
     glVertex3f(  l/2, -b/2,  h/2 );
     glVertex3f( -l/2, -b/2,  h/2 );
@@ -137,17 +147,17 @@ void struct_neck(void){
 
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
-		glColor4f(0.5, 0.0, 0.5, 1.0);
-		drawCuboidSolid(0.7, 0.4, 0.3);
+		
+		drawCuboidSolid(0.7, 0.2, 0.3);
 		
 		glTranslatef(0, -0.35, 0);
-		drawCuboidSolid(0.5, 0.3, 0.3);
+		drawCuboidSolid(0.5, 0.2, 0.3);
 	glEndList();
 }
 
 void init_structures(){
-	struct_head();
-	struct_neck();
+	// struct_head();
+	// struct_neck();
 	struct_torso();
 }
 
@@ -160,6 +170,9 @@ void renderGL(void){
   glEnable(GL_COLOR_MATERIAL);
   glEnable(GL_AUTO_NORMAL);
   glShadeModel(GL_SMOOTH);
+  
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
 
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
   glEnable (GL_LIGHT0);
@@ -173,9 +186,11 @@ void renderGL(void){
 
 
 
+  glMatrixMode(GL_MODELVIEW);
+  gluPerspective(120,1,0.1,10);
+  gluLookAt(0,0,1, 0, 0, 0, 0, 1,0);
+  glTranslatef(0, 0, -1);
   
-
-  glScalef(0.3,0.3,0.3);
   glRotatef( x_angle, 1.0, 0.0, 0.0);
   glRotatef( y_angle, 0.0, 1.0, 0.0);
 

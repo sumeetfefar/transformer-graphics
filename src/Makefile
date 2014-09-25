@@ -1,4 +1,4 @@
-OPENGLLIB= -lGL
+OPENGLLIB= -lGL -lGLU
 GLEWLIB= -lGLEW
 GLFWLIB = -lglfw
 GLFWDEP = -lX11 -lXxf86vm -lXrandr -lpthread -lXi
