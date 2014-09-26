@@ -1,6 +1,9 @@
 #include "gl_framework.hpp"
 #include <GL/glu.h>
 #include <GL/gl.h>
+#include <math.h>
+
+#define PI 3.1416
 
 #define head 1
 #define neck 2
@@ -40,7 +43,7 @@ float x_angle = 35.264;
 
 float torso_width, torso_length;
 
-vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11);
+vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180);
 vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
@@ -139,6 +142,28 @@ void drawCuboidSolid(float l, float b, float h){
     glVertex3f( -l/2, -b/2, -h/2 );
   glEnd();
 }
+void drawCylinder(float r, float h, float res){
+	for(int i=0; i<res; i++){
+		glBegin(GL_TRIANGLES);
+			glNormal3f(0, 0, 1);// Front
+		    glVertex3f( 0, 0, h/2 );
+		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), h/2 );
+		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*PI*2/res), h/2 );
+		    
+		    glNormal3f(0, 0, -1);// Front
+		    glVertex3f( 0, 0, -h/2 );
+		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*2*PI/res), -h/2 );
+		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), -h/2 );
+		glEnd();
+		glBegin(GL_QUADS);
+			glNormal3f((r*sin(i*2*PI/res)+r*sin((i+1)*2*PI/res))/2, (r*cos(i*2*PI/res)+r*cos((i+1)*2*PI/res))/2, 0);// Front
+		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*PI*2/res), h/2 );
+		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), h/2 );
+		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), -h/2 );
+		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*2*PI/res), -h/2 );
+		glEnd();
+	}
+}
 
 void drawCuboidEdgeYd(float l, float b, float h){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -236,6 +261,10 @@ void struct_right_upper_arm(void){
 void struct_right_lower_arm(void){
 	glNewList(right_lower_arm, GL_COMPILE);
 		drawCuboidEdgeYd(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
+		glPushMatrix();
+			glRotatef(90,0,1,0);
+			drawCylinder(lower_arm_cylinder.x, lower_arm_cylinder.y, lower_arm_cylinder.z);
+		glPopMatrix();
 	glEndList();
 }
 
@@ -248,6 +277,10 @@ void struct_left_upper_arm(void){
 void struct_left_lower_arm(void){
 	glNewList(left_lower_arm, GL_COMPILE);
 		drawCuboidEdgeYd(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
+		glPushMatrix();
+			glRotatef(90,0,1,0);
+			drawCylinder(lower_arm_cylinder.x, lower_arm_cylinder.y, lower_arm_cylinder.z);
+		glPopMatrix();
 	glEndList();
 }
 
@@ -475,6 +508,7 @@ void renderGL(void){
 	//~ glPopMatrix();
 	
 	draw_robot();
+	
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
