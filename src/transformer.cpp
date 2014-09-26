@@ -42,7 +42,8 @@ float torso_width, torso_length;
 
 vector upper_arm_size(0.15, 0.4, 0.15), lower_arm_size(0.11, 0.5, 0.11);
 vector thigh_size(0.15, 0.6, 0.15), leg_size(0.12, 0.6, 0.12);
-vector hand(0.1, 0.03, 0.15), foot(0.1, 0.05, 0.2);
+vector hand_size(0.1, 0.03, 0.15), foot_size(0.1, 0.05, 0.2);
+float head_length = 0.5, torso_length_upper = 0.4, torso_length_lower = 0.3, neck_length = 0.2;
 
 
 void drawCubeWireframe(){
@@ -139,9 +140,9 @@ void struct_head(void){
 	glNewList(head, GL_COMPILE);
 		glPushMatrix();
 			glColor4f(0.5, 0.0, 0.5, 1.0);
-			drawCuboidSolid(0.3,0.5,0.3);
+			drawCuboidSolid(0.3,head_length,0.3);
 			glPushMatrix();
-				glTranslatef(0, 0.35, 0.15);
+				glTranslatef(0, head_length/2 + 0.1, 0.15);
 				glColor4f(1, 1, 1, 1);
 				glPushMatrix();
 					glTranslatef(0.15, 0, 0);
@@ -160,16 +161,16 @@ void struct_head(void){
 void struct_neck(void){
 	glNewList(neck, GL_COMPILE);
 		glColor4f(0.5, 0.0, 0.5, 1.0);
-		drawCuboidSolid(0.1, 0.2, 0.1);
+		drawCuboidSolid(0.1, neck_length, 0.1);
 	glEndList();
 }
 
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
-		drawCuboidSolid(0.7, 0.4, 0.3);
+		drawCuboidSolid(0.7, torso_length_upper, 0.3);
 		
-		glTranslatef(0, -0.35, 0);
-		drawCuboidSolid(0.5, 0.3, 0.3);
+		glTranslatef(0, -torso_length_lower/2-torso_length_upper/2, 0);
+		drawCuboidSolid(0.5, torso_length_lower, 0.3);
 	glEndList();
 }
 
@@ -223,34 +224,30 @@ void struct_left_leg(void){
 
 void struct_left_hand(void){
 	glNewList(left_hand, GL_COMPILE);
-		glTranslatef(0, 0, hand.z/2);
+		glTranslatef(0, 0, hand_size.z/2);
 		glRotatef(45, 1, 0, 0);
-		drawCuboidSolid(hand.x, hand.y, hand.z);
+		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
 	glEndList();
 }
 
 void struct_left_foot(void){
 	glNewList(left_foot, GL_COMPILE);
-		drawCuboidSolid(foot.x, foot.y, foot.z);
+		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
 	glEndList();
 }
 
 void struct_right_hand(void){
 	glNewList(right_hand, GL_COMPILE);
-		glTranslatef(0, 0, hand.z/2);
+		glTranslatef(0, 0, hand_size.z/2);
 		glRotatef(45, 1, 0, 0);
-		drawCuboidSolid(hand.x, hand.y, hand.z);
+		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
 	glEndList();
 }
 
 void struct_right_foot(void){
 	glNewList(right_foot, GL_COMPILE);
-		drawCuboidSolid(foot.x, foot.y, foot.z);
+		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
 	glEndList();
-}
-
-void draw_robot(){
-	
 }
 
 void init_structures(){
@@ -269,6 +266,26 @@ void init_structures(){
 	struct_left_foot();
 	struct_right_hand();
 	struct_right_foot();
+}
+
+void draw_robot(){
+	glPushMatrix();
+		glPushMatrix();
+			glTranslatef(0, torso_length_upper/2 + neck_length/2, 0);
+			glCallList(neck);
+			glPushMatrix();
+				glTranslatef(0, neck_length/2 + head_length/2, 0);
+				glCallList(head);
+			glPopMatrix();
+		glPopMatrix();
+		glCallList(torso);
+		glPushMatrix();
+			glTranslatef(0, torso_length_upper+torso_length_lower/2-upper_arm_size.x/2, 0);
+			glPushMatrix();
+				//~ glTranslatef(
+			glPopMatrix();
+		glPopMatrix();
+	glPopMatrix();
 }
 
 void initGL(void){
@@ -302,7 +319,7 @@ void renderGL(void){
 	//~ glTranslatef(0, 0, -1);
 	glMatrixMode(GL_MODELVIEW);
 	gluPerspective(120,1,0.1,10);
-	gluLookAt(0,0,1, 0, 0, 0, 0, 1,0);
+	gluLookAt(0,0,2, 0, 0, 0, 0, 1,0);
 	
 	glRotatef( x_angle, 1.0, 0.0, 0.0);
 	glRotatef( y_angle, 0.0, 1.0, 0.0);
@@ -327,7 +344,7 @@ void renderGL(void){
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
 	
-	glCallList(left_foot);
+	draw_robot();
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -344,8 +361,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		x_angle += 10;
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
 	//! The pointer to the GLFW window
 	GLFWwindow* window;
 
