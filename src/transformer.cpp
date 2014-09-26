@@ -43,7 +43,8 @@ float torso_width, torso_length;
 vector upper_arm_size(0.15, 0.4, 0.15), lower_arm_size(0.11, 0.5, 0.11);
 vector thigh_size(0.15, 0.6, 0.15), leg_size(0.12, 0.6, 0.12);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.1, 0.05, 0.2);
-float head_length = 0.5, torso_length_upper = 0.4, torso_length_lower = 0.3, neck_length = 0.2;
+float head_length = 0.5, neck_length = 0.2;
+vector upper_torso_size( 0.7, 0.4, 0.3), lower_torso_size(0.5, 0.3, 0.3);
 
 
 void drawCubeWireframe(){
@@ -167,10 +168,10 @@ void struct_neck(void){
 
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
-		drawCuboidSolid(0.7, torso_length_upper, 0.3);
+		drawCuboidSolid(upper_torso_size.x, upper_torso_size.y, upper_torso_size.z);
 		
-		glTranslatef(0, -torso_length_lower/2-torso_length_upper/2, 0);
-		drawCuboidSolid(0.5, torso_length_lower, 0.3);
+		glTranslatef(0, -lower_torso_size.y/2-upper_torso_size.y/2, 0);
+		drawCuboidSolid(lower_torso_size.x, lower_torso_size.y, lower_torso_size.z);
 	glEndList();
 }
 
@@ -224,8 +225,8 @@ void struct_left_leg(void){
 
 void struct_left_hand(void){
 	glNewList(left_hand, GL_COMPILE);
-		glTranslatef(0, 0, hand_size.z/2);
-		glRotatef(45, 1, 0, 0);
+		//~ glTranslatef(0, 0, hand_size.z/2);
+		//~ glRotatef(45, 1, 0, 0);
 		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
 	glEndList();
 }
@@ -238,8 +239,8 @@ void struct_left_foot(void){
 
 void struct_right_hand(void){
 	glNewList(right_hand, GL_COMPILE);
-		glTranslatef(0, 0, hand_size.z/2);
-		glRotatef(45, 1, 0, 0);
+		//~ glTranslatef(0, 0, hand_size.z/2);
+		//~ glRotatef(45, 1, 0, 0);
 		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
 	glEndList();
 }
@@ -270,20 +271,88 @@ void init_structures(){
 
 void draw_robot(){
 	glPushMatrix();
+		
+		//~ Drawing the head and the neck
 		glPushMatrix();
-			glTranslatef(0, torso_length_upper/2 + neck_length/2, 0);
+			glTranslatef(0, upper_torso_size.y/2 + neck_length/2, 0);
 			glCallList(neck);
 			glPushMatrix();
 				glTranslatef(0, neck_length/2 + head_length/2, 0);
 				glCallList(head);
 			glPopMatrix();
 		glPopMatrix();
+		
+		//~ Torso
 		glCallList(torso);
+		
+		//~ Drawing the Upper Limbs 
 		glPushMatrix();
-			glTranslatef(0, torso_length_upper+torso_length_lower/2-upper_arm_size.x/2, 0);
+			glTranslatef(0, upper_torso_size.y+lower_torso_size.y/2-upper_arm_size.x/2-upper_arm_size.y/2, 0);
+			
+			//~ Right Upper Limb - Upper arm, lower arm, hand
 			glPushMatrix();
-				//~ glTranslatef(
+				glTranslatef(-upper_torso_size.x/2-upper_arm_size.x/2, 0, 0);
+				glCallList(right_upper_arm);
+				glPushMatrix();
+					glTranslatef(0, -upper_arm_size.y/2-lower_arm_size.y/2, 0);
+					glCallList(right_lower_arm);
+					glPushMatrix();
+						glTranslatef(0, -lower_arm_size.y/2-hand_size.y/2, hand_size.z/2);
+						//~ glRotatef(45, 1, 0, 0);
+						glCallList(right_hand);
+					glPopMatrix();
+				glPopMatrix();
 			glPopMatrix();
+			
+			//~ Left Upper Limb - Upper arm, lower arm, hand
+			glPushMatrix();
+				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
+				glCallList(left_upper_arm);
+				glPushMatrix();
+					glTranslatef(0, -upper_arm_size.y/2-lower_arm_size.y/2, 0);
+					glCallList(left_lower_arm);
+					glPushMatrix();
+						glTranslatef(0, -lower_arm_size.y/2-hand_size.y/2, hand_size.z/2);
+						//~ glRotatef(45, 1, 0, 0);
+						glCallList(left_hand);
+					glPopMatrix();
+				glPopMatrix();
+			glPopMatrix();
+			
+		glPopMatrix();
+		
+		//~ Draw Lower limbs
+		glPushMatrix();
+			glTranslatef(0, -lower_torso_size.y/2-thigh_size.y/2, 0);
+			
+			//~ Draw right - thigh, leg, foot
+			glPushMatrix();
+				glTranslatef(-lower_torso_size.x/2+thigh_size.x/2, 0, 0);
+				glCallList(right_thigh);
+				glPushMatrix();
+					glTranslatef(0, -thigh_size.y/2-leg_size.y/2, 0);
+					glCallList(right_leg);
+					glPushMatrix();
+						glTranslatef(0, -leg_size.y/2-foot_size.y/2, foot_size.z/2-leg_size.z/2);
+						glCallList(right_foot);
+					glPopMatrix();
+				glPopMatrix();
+			glPopMatrix();
+			
+			//~ Draw left - thigh, leg, foot
+			glPushMatrix();
+				glTranslatef(lower_torso_size.x/2-thigh_size.x/2, 0, 0);
+				glCallList(left_thigh);
+				glPushMatrix();
+					glTranslatef(0, -thigh_size.y/2-leg_size.y/2, 0);
+					glCallList(left_leg);
+					glPushMatrix();
+						glTranslatef(0, -leg_size.y/2-foot_size.y/2, foot_size.z/2-leg_size.z/2);
+						glCallList(left_foot);
+					glPopMatrix();
+				glPopMatrix();
+			glPopMatrix();
+			
 		glPopMatrix();
 	glPopMatrix();
 }
