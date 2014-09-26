@@ -40,11 +40,16 @@ float x_angle = 35.264;
 
 float torso_width, torso_length;
 
-vector upper_arm_size(0.15, 0.4, 0.15), lower_arm_size(0.11, 0.5, 0.11);
-vector thigh_size(0.15, 0.6, 0.15), leg_size(0.12, 0.6, 0.12);
-vector hand_size(0.1, 0.03, 0.15), foot_size(0.1, 0.05, 0.2);
+vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11);
+vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
+vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
-vector upper_torso_size( 0.7, 0.4, 0.3), lower_torso_size(0.5, 0.3, 0.3);
+vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3);
+
+float right_elbow_angle = 0, left_elbow_angle = 0;
+float right_knee_angle = 0, left_knee_angle = 0;
+vector neck_rot(0, 0, 0);
+vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
 
 
 void drawCubeWireframe(){
@@ -135,6 +140,52 @@ void drawCuboidSolid(float l, float b, float h){
   glEnd();
 }
 
+void drawCuboidEdgeYd(float l, float b, float h){
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_QUADS);
+    // glColor4f(1,0,0,1);
+    glNormal3f(0, 0, 1);// Front
+    glVertex3f(  l/2, -b, h/2 );
+    glVertex3f(  l/2,  0, h/2 );
+    glVertex3f( -l/2,  0, h/2 );
+    glVertex3f( -l/2, -b, h/2 );
+    
+    // glColor4f(0,1,0,1);
+    glNormal3f(0, 0, -1); // Back
+    glVertex3f( -l/2, -b, -h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f(  l/2,  0, -h/2 );
+    glVertex3f(  l/2, -b, -h/2 );   
+    
+    // glColor4f(0,0,1,1);
+    glNormal3f(1, 0, 0);// RIGHT
+    glVertex3f( l/2, -b, -h/2 );
+    glVertex3f( l/2,  0, -h/2 );
+    glVertex3f( l/2,  0,  h/2 );
+    glVertex3f( l/2, -b,  h/2 );
+    
+    // glColor4f(1,1,0,1);
+    glNormal3f(-1, 0, 0);// LEFT
+    glVertex3f( -l/2, -b,  h/2 );
+    glVertex3f( -l/2,  0,  h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f( -l/2, -b, -h/2 );
+  
+    // glColor4f(1,0,1,1);
+    glNormal3f(0, 1, 0);// TOP
+    glVertex3f(  l/2,  0,  h/2 );
+    glVertex3f(  l/2,  0, -h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f( -l/2,  0,  h/2 );
+  
+    // glColor4f(0,1,1,1);
+    glNormal3f(0, -1, 0);// BOTTOM
+    glVertex3f(  l/2, -b, -h/2 );
+    glVertex3f(  l/2, -b,  h/2 );
+    glVertex3f( -l/2, -b,  h/2 );
+    glVertex3f( -l/2, -b, -h/2 );
+  glEnd();
+}
 
 
 void struct_head(void){
@@ -162,7 +213,8 @@ void struct_head(void){
 void struct_neck(void){
 	glNewList(neck, GL_COMPILE);
 		glColor4f(0.5, 0.0, 0.5, 1.0);
-		drawCuboidSolid(0.1, neck_length, 0.1);
+		glRotatef(180, 1, 0, 0);
+		drawCuboidEdgeYd(0.1, neck_length, 0.1);
 	glEndList();
 }
 
@@ -183,7 +235,7 @@ void struct_right_upper_arm(void){
 
 void struct_right_lower_arm(void){
 	glNewList(right_lower_arm, GL_COMPILE);
-		drawCuboidSolid(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
+		drawCuboidEdgeYd(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
 	glEndList();
 }
 
@@ -195,7 +247,7 @@ void struct_left_upper_arm(void){
 
 void struct_left_lower_arm(void){
 	glNewList(left_lower_arm, GL_COMPILE);
-		drawCuboidSolid(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
+		drawCuboidEdgeYd(lower_arm_size.x, lower_arm_size.y, lower_arm_size.z);
 	glEndList();
 }
 
@@ -207,7 +259,7 @@ void struct_right_thigh(void){
 
 void struct_right_leg(void){
 	glNewList(right_leg, GL_COMPILE);
-		drawCuboidSolid(leg_size.x, leg_size.y, leg_size.z);
+		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
 
@@ -219,7 +271,7 @@ void struct_left_thigh(void){
 
 void struct_left_leg(void){
 	glNewList(left_leg, GL_COMPILE);
-		drawCuboidSolid(leg_size.x, leg_size.y, leg_size.z);
+		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
 
@@ -274,10 +326,15 @@ void draw_robot(){
 		
 		//~ Drawing the head and the neck
 		glPushMatrix();
-			glTranslatef(0, upper_torso_size.y/2 + neck_length/2, 0);
-			glCallList(neck);
+			glTranslatef(0, upper_torso_size.y/2, 0);
+			glRotatef(neck_rot.x, 1, 0, 0);
+			glRotatef(neck_rot.y, 0, 1, 0);
+			glRotatef(neck_rot.z, 0, 0, 1);
+			glPushMatrix(); // because using drawcuboidedgeYd and rotating 180
+				glCallList(neck);
+			glPopMatrix();
 			glPushMatrix();
-				glTranslatef(0, neck_length/2 + head_length/2, 0);
+				glTranslatef(0, neck_length + head_length/2, 0);
 				glCallList(head);
 			glPopMatrix();
 		glPopMatrix();
@@ -294,10 +351,11 @@ void draw_robot(){
 				glTranslatef(-upper_torso_size.x/2-upper_arm_size.x/2, 0, 0);
 				glCallList(right_upper_arm);
 				glPushMatrix();
-					glTranslatef(0, -upper_arm_size.y/2-lower_arm_size.y/2, 0);
+					glTranslatef(0, -upper_arm_size.y/2, 0);
+					glRotatef(right_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(right_lower_arm);
 					glPushMatrix();
-						glTranslatef(0, -lower_arm_size.y/2-hand_size.y/2, hand_size.z/2);
+						glTranslatef(0, -lower_arm_size.y-hand_size.y/2, hand_size.z/2);
 						//~ glRotatef(45, 1, 0, 0);
 						glCallList(right_hand);
 					glPopMatrix();
@@ -309,10 +367,11 @@ void draw_robot(){
 				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
 				glCallList(left_upper_arm);
 				glPushMatrix();
-					glTranslatef(0, -upper_arm_size.y/2-lower_arm_size.y/2, 0);
+					glTranslatef(0, -upper_arm_size.y/2, 0);
+					glRotatef(left_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(left_lower_arm);
 					glPushMatrix();
-						glTranslatef(0, -lower_arm_size.y/2-hand_size.y/2, hand_size.z/2);
+						glTranslatef(0, -lower_arm_size.y-hand_size.y/2, hand_size.z/2);
 						//~ glRotatef(45, 1, 0, 0);
 						glCallList(left_hand);
 					glPopMatrix();
@@ -330,10 +389,11 @@ void draw_robot(){
 				glTranslatef(-lower_torso_size.x/2+thigh_size.x/2, 0, 0);
 				glCallList(right_thigh);
 				glPushMatrix();
-					glTranslatef(0, -thigh_size.y/2-leg_size.y/2, 0);
+					glTranslatef(0, -thigh_size.y/2, 0);
+					glRotatef(right_knee_angle, 1, 0, 0);
 					glCallList(right_leg);
 					glPushMatrix();
-						glTranslatef(0, -leg_size.y/2-foot_size.y/2, foot_size.z/2-leg_size.z/2);
+						glTranslatef(0, -leg_size.y-foot_size.y/2, foot_size.z/2-leg_size.z/2);
 						glCallList(right_foot);
 					glPopMatrix();
 				glPopMatrix();
@@ -344,10 +404,11 @@ void draw_robot(){
 				glTranslatef(lower_torso_size.x/2-thigh_size.x/2, 0, 0);
 				glCallList(left_thigh);
 				glPushMatrix();
-					glTranslatef(0, -thigh_size.y/2-leg_size.y/2, 0);
+					glTranslatef(0, -thigh_size.y/2, 0);
+					glRotatef(left_knee_angle, 1, 0, 0);
 					glCallList(left_leg);
 					glPushMatrix();
-						glTranslatef(0, -leg_size.y/2-foot_size.y/2, foot_size.z/2-leg_size.z/2);
+						glTranslatef(0, -leg_size.y-foot_size.y/2, foot_size.z/2-leg_size.z/2);
 						glCallList(left_foot);
 					glPopMatrix();
 				glPopMatrix();
@@ -420,6 +481,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	//!Close the window if the ESC key was pressed
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	//~ Change Viewpoint with Arrow Keys
 	else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
 		y_angle += 10;
 	else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
@@ -428,6 +490,46 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		x_angle -= 10;
 	else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
 		x_angle += 10;
+	
+	//~ Rotate Elbows and Knees
+	else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+		right_elbow_angle += 10;
+	else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+		right_elbow_angle -= 10;
+	else if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+		left_elbow_angle += 10;
+	else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+		left_elbow_angle -= 10;
+	else if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+		right_knee_angle += 10;
+	else if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+		right_knee_angle -= 10;
+	else if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+		left_knee_angle += 10;
+	else if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+		left_knee_angle -= 10;
+		
+	//~ Rotate neck and head
+	else if (key == GLFW_KEY_Q && action == GLFW_PRESS)
+		neck_rot.x += 10;
+	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
+		neck_rot.x -= 10;
+	else if (key == GLFW_KEY_A && action == GLFW_PRESS)
+		neck_rot.y += 10;
+	else if (key == GLFW_KEY_S && action == GLFW_PRESS)
+		neck_rot.y -= 10;
+	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+		neck_rot.z += 10;
+	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
+		neck_rot.z -= 10;
+	
+	//~ Rotate Right shoulder
+	else if (key == GLFW_KEY_E && action == GLFW_PRESS)
+		right_shoulder_rot.x -= 10;
+	else if (key == GLFW_KEY_D && action == GLFW_PRESS)
+		right_shoulder_rot.y -= 10;
+	else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+		right_shoulder_rot.z -= 10;
 }
 
 int main(int argc, char** argv){
