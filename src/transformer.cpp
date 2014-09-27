@@ -145,6 +145,23 @@ void drawCuboidSolid(float l, float b, float h){
     glVertex3f( -l/2, -b/2, -h/2 );
   glEnd();
 }
+void drawSphere(float r, float res){
+	for(int j=0; j<res; j++){
+		for(int i=0; i<res; i++){
+			glBegin(GL_QUADS);
+				//~ glNormal3f((r*sin(i*2*PI/res) + r*sin((i+1)*2*PI/res))/2, (r*cos(i*2*PI/res) + r*cos((i+1)*2*PI/res))/2, (r*cos(j*PI/res)+r*cos((j+1)*PI/res))/2 );// Front
+				glNormal3f( r*sin(i*2*PI/res)*sin(j*PI/res),  r*cos(i*PI*2/res)*sin(j*PI/res), r*cos(j*PI/res) );
+			    glVertex3f( r*sin(i*2*PI/res)*sin(j*PI/res),  r*cos(i*PI*2/res)*sin(j*PI/res), r*cos(j*PI/res) );
+			    glNormal3f( r*sin((i+1)*2*PI/res)*sin(j*PI/res),  r*cos((i+1)*2*PI/res)*sin(j*PI/res), r*cos(j*PI/res) );
+			    glVertex3f( r*sin((i+1)*2*PI/res)*sin(j*PI/res),  r*cos((i+1)*2*PI/res)*sin(j*PI/res), r*cos(j*PI/res) );
+			    glNormal3f( r*sin((i+1)*2*PI/res)*sin((j+1)*PI/res),  r*cos((i+1)*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			    glVertex3f( r*sin((i+1)*2*PI/res)*sin((j+1)*PI/res),  r*cos((i+1)*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			    glNormal3f( r*sin(i*2*PI/res)*sin((j+1)*PI/res),  r*cos(i*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			    glVertex3f( r*sin(i*2*PI/res)*sin((j+1)*PI/res),  r*cos(i*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			glEnd();
+		}
+	}
+}
 
 void drawCylinder(float r, float h, float res){
 	for(int i=0; i<res; i++){
@@ -535,7 +552,8 @@ void renderGL(void){
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
 	
-	draw_robot();
+	//~ draw_robot();
+	drawSphere(0.5,60);
 	
 }
 
