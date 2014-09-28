@@ -57,6 +57,26 @@ vector right_hip_rot(0, 0, 0), left_hip_rot(0, 0, 0);
 vector right_hand_rot(0, 0, 0), left_hand_rot(0, 0, 0);
 vector right_foot_rot(0, 0, 0), left_foot_rot(0, 0, 0);
 
+GLuint load_texture(const char* textureName){
+
+   GLuint texture;  //variable for texture
+
+   glGenTextures(1,&texture); //allocate the memory for texture
+
+   glBindTexture(GL_TEXTURE_2D,texture); //Binding the texture
+
+
+   if(glfwLoadTexture2D(textureName, GLFW_BUILD_MIPMAPS_BIT)){
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+      return texture;
+
+   } else return -1;
+
+}
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -104,45 +124,45 @@ void drawCuboidSolid(float l, float b, float h){
 	glBegin(GL_QUADS);
     // glColor4f(1,0,0,1);
     glNormal3f(0, 0, 1);// Front
-    glVertex3f(  l/2, -b/2, h/2 );
-    glVertex3f(  l/2,  b/2, h/2 );
-    glVertex3f( -l/2,  b/2, h/2 );
-    glVertex3f( -l/2, -b/2, h/2 );
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(  l/2, -b/2, h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(  l/2,  b/2, h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( -l/2,  b/2, h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( -l/2, -b/2, h/2 );
     
     // glColor4f(0,1,0,1);
     glNormal3f(0, 0, -1); // Back
-    glVertex3f( -l/2, -b/2, -h/2 );
-    glVertex3f( -l/2,  b/2, -h/2 );
-    glVertex3f(  l/2,  b/2, -h/2 );
-    glVertex3f(  l/2, -b/2, -h/2 );   
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( -l/2, -b/2, -h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( -l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(  l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(  l/2, -b/2, -h/2 );   
     
     // glColor4f(0,0,1,1);
     glNormal3f(1, 0, 0);// RIGHT
-    glVertex3f( l/2, -b/2, -h/2 );
-    glVertex3f( l/2,  b/2, -h/2 );
-    glVertex3f( l/2,  b/2,  h/2 );
-    glVertex3f( l/2, -b/2,  h/2 );
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( l/2, -b/2, -h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( l/2,  b/2,  h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( l/2, -b/2,  h/2 );
     
     // glColor4f(1,1,0,1);
     glNormal3f(-1, 0, 0);// LEFT
-    glVertex3f( -l/2, -b/2,  h/2 );
-    glVertex3f( -l/2,  b/2,  h/2 );
-    glVertex3f( -l/2,  b/2, -h/2 );
-    glVertex3f( -l/2, -b/2, -h/2 );
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( -l/2, -b/2,  h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( -l/2,  b/2,  h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( -l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( -l/2, -b/2, -h/2 );
   
     // glColor4f(1,0,1,1);
     glNormal3f(0, 1, 0);// TOP
-    glVertex3f(  l/2,  b/2,  h/2 );
-    glVertex3f(  l/2,  b/2, -h/2 );
-    glVertex3f( -l/2,  b/2, -h/2 );
-    glVertex3f( -l/2,  b/2,  h/2 );
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(  l/2,  b/2,  h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(  l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( -l/2,  b/2, -h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( -l/2,  b/2,  h/2 );
   
     // glColor4f(0,1,1,1);
     glNormal3f(0, -1, 0);// BOTTOM
-    glVertex3f(  l/2, -b/2, -h/2 );
-    glVertex3f(  l/2, -b/2,  h/2 );
-    glVertex3f( -l/2, -b/2,  h/2 );
-    glVertex3f( -l/2, -b/2, -h/2 );
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(  l/2, -b/2, -h/2 );
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(  l/2, -b/2,  h/2 );
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( -l/2, -b/2,  h/2 );
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( -l/2, -b/2, -h/2 );
   glEnd();
 }
 
@@ -249,6 +269,8 @@ void struct_neck(void){
 
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
+
+		
 		drawCuboidSolid(upper_torso_size.x, upper_torso_size.y, upper_torso_size.z);
 		
 		glTranslatef(0, -lower_torso_size.y/2-upper_torso_size.y/2, 0);
@@ -358,6 +380,8 @@ void init_structures(){
 	struct_right_foot();
 }
 
+
+
 void draw_robot(){
 	glPushMatrix();
 		
@@ -377,6 +401,8 @@ void draw_robot(){
 		glPopMatrix();
 		
 		//~ Torso
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, load_texture("tex/1.jpg"));
 		glCallList(torso);
 		
 		//~ Drawing the Upper Limbs 
