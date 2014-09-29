@@ -31,6 +31,8 @@
 #define sTFone 1
 #define sTFtwo 2
 #define sTFthree 3
+#define sTFfour 4
+#define sTFfive 5
 
 #define TF_BASE_ROT_V 90
 #define TF_BASE_ROT_H 0
@@ -40,6 +42,11 @@
 
 #define TF_ELBOW_ANGLE_V 90
 #define TF_ELBOW_ANGLE_H 0
+
+#define TF_KNEE_ANGLE_V 60
+#define TF_KNEE_ANGLE_H 0
+
+#define TF_DELAY_uS 100000
 
 class vector{
 	public:
@@ -95,8 +102,8 @@ float tf_base_rot = 0;
 
 
 
-//~ Go back to base position
-void reset_all_angles(){
+//~ Go back to base position in sHUMANOID
+void reset_angles_H(){
 	neck_rot.reset();
 	right_shoulder_rot.reset(); left_shoulder_rot.reset();
 	right_hip_rot.reset(); left_hip_rot.reset();
@@ -119,7 +126,33 @@ void transform(){
 //~ Transform back into humanoid
 void untransform(){
 	prevState = sVEHICLE;
-	state = sTFthree;
+	state = sTFfive;
+}
+
+void drawTetrahedron(float s){
+    glBegin(GL_TRIANGLES);
+
+    glNormal3f(0, 0.577, -0.816);
+    glVertex3f(-s/2, 0, -s*0.707/2);
+    glVertex3f(0, s/2, s*0.707/2);
+    glVertex3f(s/2, 0, -s*0.707/2);
+    
+    glNormal3f(0, -0.577, -0.816);
+    glVertex3f(s/2, 0, -s*0.707/2);
+    glVertex3f(0, -s/2, s*0.707/2);
+    glVertex3f(-s/2, 0, -s*0.707/2);
+        
+    glNormal3f(0.577, 0, 0.816);
+    glVertex3f(s/2, 0, -s*0.707/2);
+    glVertex3f(0, s/2, s*0.707/2);
+    glVertex3f(0, -s/2, s*0.707/2);
+    
+    glNormal3f(-0.577, 0, 0.816);
+    glVertex3f(-s/2, 0, -s*0.707/2);
+    glVertex3f(0, -s/2, s*0.707/2);
+    glVertex3f(0, s/2, s*0.707/2);
+
+    glEnd();
 }
 
 void drawCubeWireframe(){
@@ -549,7 +582,7 @@ void draw_robot(){
 						if (left_elbow_angle != TF_ELBOW_ANGLE_V)
 							left_elbow_angle += 10;
 						else{
-							state = sVEHICLE;
+							state = sTFfour;
 							prevState = sTFthree;
 						}
 					}
@@ -581,6 +614,15 @@ void draw_robot(){
 				glCallList(right_thigh);
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
+					
+					if (state == sTFfour && prevState == sTFthree){
+						if (right_knee_angle != TF_KNEE_ANGLE_V)
+							right_knee_angle += 10;
+						else{
+							//~ state = sVEHICLE;
+							//~ prevState = sTFthree;
+						}
+					}
 					glRotatef(right_knee_angle, 1, 0, 0);
 					glCallList(right_leg);
 					glPushMatrix();
@@ -602,6 +644,15 @@ void draw_robot(){
 				glCallList(left_thigh);
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
+					
+					if (state == sTFfour && prevState == sTFthree){
+						if (left_knee_angle != TF_KNEE_ANGLE_V)
+							left_knee_angle += 10;
+						else{
+							state = sVEHICLE;
+							prevState = sTFfour;
+						}
+					}
 					glRotatef(left_knee_angle, 1, 0, 0);
 					glCallList(left_leg);
 					glPushMatrix();
@@ -674,8 +725,9 @@ void renderGL(void){
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
 	
-	draw_robot();
+	//~ draw_robot();
 	//~ drawSphere(0.5,60);
+	drawTetrahedron(1);
 	
 }
 
@@ -792,7 +844,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	//~ Transform	
 	else if (key == GLFW_KEY_TAB && action == GLFW_PRESS){
 		if (state == sHUMANOID){
-			reset_all_angles();
+			reset_angles_H();
 			transform();
 		}
 		else if (state == sVEHICLE)
@@ -862,7 +914,7 @@ int main(int argc, char** argv){
 			// Poll for and process events
 			glfwPollEvents();
 		} else {
-			usleep(200000);
+			usleep(TF_DELAY_uS);
 			//~ right_hip_rot.set(20, 50, 82);
 		}
 	}
