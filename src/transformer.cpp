@@ -21,6 +21,7 @@
 #define left_hand 13
 #define right_foot 14
 #define left_foot 15
+#define hand_blade 16
 
 #define Y_ANGLE_DEFAULT -45
 #define X_ANGLE_DEFAULT 35.264
@@ -84,7 +85,8 @@ int state = sHUMANOID, prevState = sHUMANOID;
 
 float torso_width, torso_length;
 
-vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180);
+vector rotor_blade_cylinder(0.08, 0.05, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.1,180);
+vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
 vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
@@ -247,19 +249,20 @@ void drawSphere(float r, float res){
 	for(int j=0; j<res; j++){
 		for(int i=0; i<res; i++){
 			glBegin(GL_QUADS);
-				//~ glNormal3f((r*sin(i*2*PI/res) + r*sin((i+1)*2*PI/res))/2, (r*cos(i*2*PI/res) + r*cos((i+1)*2*PI/res))/2, (r*cos(j*PI/res)+r*cos((j+1)*PI/res))/2 );// Front
-				glNormal3f( r*sin(i*2*PI/res)*sin(j*PI/res),  r*cos(i*PI*2/res)*sin(j*PI/res), r*cos(j*PI/res) );
+				glNormal3f( sin(i*2*PI/res)*sin(j*PI/res),  cos(i*PI*2/res)*sin(j*PI/res), cos(j*PI/res) );
 			    glVertex3f( r*sin(i*2*PI/res)*sin(j*PI/res),  r*cos(i*PI*2/res)*sin(j*PI/res), r*cos(j*PI/res) );
-			    glNormal3f( r*sin((i+1)*2*PI/res)*sin(j*PI/res),  r*cos((i+1)*2*PI/res)*sin(j*PI/res), r*cos(j*PI/res) );
+			    glNormal3f( sin((i+1)*2*PI/res)*sin(j*PI/res),  cos((i+1)*2*PI/res)*sin(j*PI/res), cos(j*PI/res) );
 			    glVertex3f( r*sin((i+1)*2*PI/res)*sin(j*PI/res),  r*cos((i+1)*2*PI/res)*sin(j*PI/res), r*cos(j*PI/res) );
-			    glNormal3f( r*sin((i+1)*2*PI/res)*sin((j+1)*PI/res),  r*cos((i+1)*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			    glNormal3f( sin((i+1)*2*PI/res)*sin((j+1)*PI/res),  cos((i+1)*2*PI/res)*sin((j+1)*PI/res), cos((j+1)*PI/res) );
 			    glVertex3f( r*sin((i+1)*2*PI/res)*sin((j+1)*PI/res),  r*cos((i+1)*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
-			    glNormal3f( r*sin(i*2*PI/res)*sin((j+1)*PI/res),  r*cos(i*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
+			    glNormal3f( sin(i*2*PI/res)*sin((j+1)*PI/res),  cos(i*2*PI/res)*sin((j+1)*PI/res), cos((j+1)*PI/res) );
 			    glVertex3f( r*sin(i*2*PI/res)*sin((j+1)*PI/res),  r*cos(i*2*PI/res)*sin((j+1)*PI/res), r*cos((j+1)*PI/res) );
 			glEnd();
 		}
 	}
 }
+
+
 
 void drawCylinder(float r, float h, float res){
 	for(int i=0; i<res; i++){
@@ -275,10 +278,14 @@ void drawCylinder(float r, float h, float res){
 		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), -h/2 );
 		glEnd();
 		glBegin(GL_QUADS);
-			glNormal3f((r*sin(i*2*PI/res)+r*sin((i+1)*2*PI/res))/2, (r*cos(i*2*PI/res)+r*cos((i+1)*2*PI/res))/2, 0);// Front
+			//~ glNormal3f((r*sin(i*2*PI/res)+r*sin((i+1)*2*PI/res))/2, (r*cos(i*2*PI/res)+r*cos((i+1)*2*PI/res))/2, 0);// Front
+		    glNormal3f( sin(i*2*PI/res),  cos(i*PI*2/res), 0 );
 		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*PI*2/res), h/2 );
+		    glNormal3f( sin((i+1)*2*PI/res),  cos((i+1)*2*PI/res), 0 );
 		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), h/2 );
+		    glNormal3f( sin((i+1)*2*PI/res),  cos((i+1)*2*PI/res), 0 );
 		    glVertex3f( r*sin((i+1)*2*PI/res),  r*cos((i+1)*2*PI/res), -h/2 );
+		    glNormal3f( sin(i*2*PI/res),  cos(i*2*PI/res), 0 );
 		    glVertex3f( r*sin(i*2*PI/res),  r*cos(i*2*PI/res), -h/2 );
 		glEnd();
 	}
@@ -331,6 +338,55 @@ void drawCuboidEdgeYd(float l, float b, float h){
   glEnd();
 }
 
+void drawPrism(float l, float b, float h ){
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+	glBegin(GL_TRIANGLES);
+    // glColor4f(1,0,0,1);
+    glNormal3f(0, 0, 1);// Front
+    glVertex3f(  l/2, -b, h/2 );
+    glVertex3f(  l/2,  0, h/2 );
+    glVertex3f( -l/2,  0, h/2 );
+    //~ glVertex3f( -l/2, -b, h/2 );
+    
+    // glColor4f(0,1,0,1);
+    glNormal3f(0, 0, -1); // Back
+    //~ glVertex3f( -l/2, -b, -h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f(  l/2,  0, -h/2 );
+    glVertex3f(  l/2, -b, -h/2 );   
+
+    glEnd();
+    glBegin(GL_QUADS);
+    //~ // glColor4f(0,0,1,1);
+    glNormal3f(1, 0, 0);// RIGHT
+    glVertex3f( l/2, -b, -h/2 );
+    glVertex3f( l/2,  0, -h/2 );
+    glVertex3f( l/2,  0,  h/2 );
+    glVertex3f( l/2, -b,  h/2 );
+    
+    // glColor4f(1,1,0,1);
+    glNormal3f(-b/sqrt(l*l+b*b), -l/sqrt(l*l+b*b), 0);// LEFT
+    glVertex3f( l/2, -b,  h/2 );
+    glVertex3f( -l/2,  0,  h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f( l/2, -b, -h/2 );
+  
+    //~ // glColor4f(1,0,1,1);
+    glNormal3f(0, 1, 0);// TOP
+    glVertex3f(  l/2,  0,  h/2 );
+    glVertex3f(  l/2,  0, -h/2 );
+    glVertex3f( -l/2,  0, -h/2 );
+    glVertex3f( -l/2,  0,  h/2 );
+  
+    // glColor4f(0,1,1,1);
+    //~ glNormal3f(0, -1, 0);// BOTTOM
+    //~ glVertex3f(  l/2, -b, -h/2 );
+    //~ glVertex3f(  l/2, -b,  h/2 );
+    //~ glVertex3f( -l/2, -b,  h/2 );
+    //~ glVertex3f( -l/2, -b, -h/2 );
+	glEnd();
+}
 
 void struct_head(void){
 	glNewList(head, GL_COMPILE);
@@ -373,6 +429,7 @@ void struct_torso(void){
 
 void struct_right_upper_arm(void){
 	glNewList(right_upper_arm, GL_COMPILE);
+		drawSphere(upper_arm_sphere.x,upper_arm_sphere.y);
 		drawCuboidEdgeYd(upper_arm_size.x, upper_arm_size.y, upper_arm_size.z);
 	glEndList();
 }
@@ -389,6 +446,7 @@ void struct_right_lower_arm(void){
 
 void struct_left_upper_arm(void){
 	glNewList(left_upper_arm, GL_COMPILE);
+	drawSphere(upper_arm_sphere.x,upper_arm_sphere.y);
 		drawCuboidEdgeYd(upper_arm_size.x, upper_arm_size.y, upper_arm_size.z);
 	glEndList();
 }
@@ -400,6 +458,7 @@ void struct_left_lower_arm(void){
 			glRotatef(90,0,1,0);
 			drawCylinder(lower_arm_cylinder.x, lower_arm_cylinder.y, lower_arm_cylinder.z);
 		glPopMatrix();
+		
 	glEndList();
 }
 
@@ -431,7 +490,12 @@ void struct_left_hand(void){
 	glNewList(left_hand, GL_COMPILE);
 		//~ glTranslatef(0, 0, hand_size.z/2);
 		//~ glRotatef(45, 1, 0, 0);
-		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
+		//~ drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
+		glPushMatrix();
+			glRotatef(90,0,1,0);
+			//~ glTranslatef(0.06,0,0);
+			drawCylinder(rotor_base_cylinder.x,rotor_base_cylinder.y,rotor_base_cylinder.z);
+		glPopMatrix();
 	glEndList();
 }
 
@@ -445,13 +509,40 @@ void struct_right_hand(void){
 	glNewList(right_hand, GL_COMPILE);
 		//~ glTranslatef(0, 0, hand_size.z/2);
 		//~ glRotatef(45, 1, 0, 0);
-		drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
+		//~ drawCuboidSolid(hand_size.x, hand_size.y, hand_size.z);
+		glPushMatrix();
+			glRotatef(90,0,1,0);
+			//~ glTranslatef(0.06,0,0);
+			drawCylinder(rotor_base_cylinder.x,rotor_base_cylinder.y,rotor_base_cylinder.z);
+		glPopMatrix();
 	glEndList();
 }
 
 void struct_right_foot(void){
 	glNewList(right_foot, GL_COMPILE);
 		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
+	glEndList();
+}
+void struct_hand_blade(void){
+	
+	glNewList(hand_blade, GL_COMPILE);
+		
+		
+		//~ glTranslatef(0,rotor_blade_cylinder.y/2,0);
+		drawCylinder(rotor_blade_cylinder.x,rotor_blade_cylinder.y,rotor_blade_cylinder.z);
+		glPushMatrix();
+			glTranslatef(0.04,0,0);
+			drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glTranslatef(0,-rotor_blade_body.y,0);
+			glRotatef(180,0,1,0);
+			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(-0.04,0,0);
+			drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glTranslatef(0,-rotor_blade_body.y,0);
+			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
+		glPopMatrix();	
 	glEndList();
 }
 
@@ -471,6 +562,7 @@ void init_structures(){
 	struct_left_foot();
 	struct_right_hand();
 	struct_right_foot();
+	struct_hand_blade();
 }
 
 void draw_robot(){
@@ -548,13 +640,21 @@ void draw_robot(){
 					}
 					glRotatef(right_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(right_lower_arm);
+					
 					glPushMatrix();
 						glTranslatef(0, -lower_arm_size.y-hand_size.y/2, hand_size.z/2);
-						glRotatef(right_hand_rot.x, 1, 0, 0);
-						glRotatef(right_hand_rot.y, 0, 1, 0);
-						glRotatef(right_hand_rot.z, 0, 0, 1);
+						//~ glCallList(hand_blade);
+						
 						//~ glRotatef(45, 1, 0, 0);
+						glTranslatef(0,0,-0.06);
+						glRotatef(right_hand_rot.y, 0, 1, 0);
 						glCallList(right_hand);
+						glRotatef(right_hand_rot.x, 1, 0, 0);
+						glRotatef(right_hand_rot.z, 0, 0, 1);
+						glTranslatef(0,0,0.06);
+						glPushMatrix();
+							glCallList(hand_blade);
+						glPopMatrix();
 					glPopMatrix();
 				glPopMatrix();
 			glPopMatrix();
@@ -590,11 +690,17 @@ void draw_robot(){
 					glCallList(left_lower_arm);
 					glPushMatrix();
 						glTranslatef(0, -lower_arm_size.y-hand_size.y/2, hand_size.z/2);
-						glRotatef(left_hand_rot.x, 1, 0, 0);
-						glRotatef(left_hand_rot.y, 0, 1, 0);
-						glRotatef(left_hand_rot.z, 0, 0, 1);
+						
+						glTranslatef(0,0,-0.06);
 						//~ glRotatef(45, 1, 0, 0);
+						glRotatef(left_hand_rot.y, 0, 1, 0);
 						glCallList(left_hand);
+						glRotatef(left_hand_rot.x, 1, 0, 0);
+						glRotatef(left_hand_rot.z, 0, 0, 1);
+						glTranslatef(0,0,0.06);
+						glPushMatrix();
+							glCallList(hand_blade);
+						glPopMatrix();
 					glPopMatrix();
 				glPopMatrix();
 			glPopMatrix();
@@ -673,7 +779,8 @@ void initGL(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	glEnable(GL_CULL_FACE); 
-
+	
+	//~ glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_AUTO_NORMAL);
