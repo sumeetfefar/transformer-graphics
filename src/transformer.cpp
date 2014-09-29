@@ -35,6 +35,9 @@
 #define TF_BASE_ROT_V 90
 #define TF_BASE_ROT_H 0
 
+#define TF_SHOULDER_ROT_V 120
+#define TF_SHOULDER_ROT_H 0
+
 class vector{
 	public:
 	float x, y, z;
@@ -441,7 +444,7 @@ void draw_robot(){
 			if (tf_base_rot != TF_BASE_ROT_V)
 				tf_base_rot += 10;
 			else{
-				state = sVEHICLE;
+				state = sTFtwo;
 				prevState = sTFone;
 			}
 		}
@@ -483,13 +486,18 @@ void draw_robot(){
 			//~ Right Upper Limb - Upper arm, lower arm, hand
 			glPushMatrix();
 				glTranslatef(-upper_torso_size.x/2-upper_arm_size.x/2, 0, 0);
+				
+				if (state == sTFtwo && prevState == sTFone){
+					if (right_shoulder_rot.z != -TF_SHOULDER_ROT_V)
+						right_shoulder_rot.z -= 10;
+					else{
+						state = sTFthree;
+						prevState = sTFtwo;
+					}
+				}
 				glRotatef(right_shoulder_rot.x, 1, 0, 0);
 				glRotatef(right_shoulder_rot.y, 0, 1, 0);
 				glRotatef(right_shoulder_rot.z, 0, 0, 1);
-				//~ if (state == sTFone && prevState == sHUMANOID){
-					//~ if right_shoulder_rot
-					//~ right_shoulder_rot
-				//~ }
 				glCallList(right_upper_arm);
 				glPushMatrix();
 					glTranslatef(0, -upper_arm_size.y, 0);
@@ -509,6 +517,15 @@ void draw_robot(){
 			//~ Left Upper Limb - Upper arm, lower arm, hand
 			glPushMatrix();
 				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
+				
+				if (state == sTFthree && prevState == sTFtwo){
+					if (left_shoulder_rot.z != TF_SHOULDER_ROT_V)
+						left_shoulder_rot.z += 10;
+					else{
+						state = sVEHICLE;
+						prevState = sTFthree;
+					}
+				}
 				glRotatef(left_shoulder_rot.x, 1, 0, 0);
 				glRotatef(left_shoulder_rot.y, 0, 1, 0);
 				glRotatef(left_shoulder_rot.z, 0, 0, 1);
