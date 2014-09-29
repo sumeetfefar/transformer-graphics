@@ -38,6 +38,9 @@
 #define TF_SHOULDER_ROT_V 120
 #define TF_SHOULDER_ROT_H 0
 
+#define TF_ELBOW_ANGLE_V 90
+#define TF_ELBOW_ANGLE_H 0
+
 class vector{
 	public:
 	float x, y, z;
@@ -491,8 +494,8 @@ void draw_robot(){
 					if (right_shoulder_rot.z != -TF_SHOULDER_ROT_V)
 						right_shoulder_rot.z -= 10;
 					else{
-						state = sTFthree;
-						prevState = sTFtwo;
+						//~ state = ;
+						//~ prevState = sTFtwo;
 					}
 				}
 				glRotatef(right_shoulder_rot.x, 1, 0, 0);
@@ -501,6 +504,15 @@ void draw_robot(){
 				glCallList(right_upper_arm);
 				glPushMatrix();
 					glTranslatef(0, -upper_arm_size.y, 0);
+					
+					if (state == sTFthree && prevState == sTFtwo){
+						if (right_elbow_angle != TF_ELBOW_ANGLE_V)
+							right_elbow_angle += 10;
+						else{
+							//~ state = ;
+							//~ prevState = sTFtwo;
+						}
+					}
 					glRotatef(right_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(right_lower_arm);
 					glPushMatrix();
@@ -518,12 +530,12 @@ void draw_robot(){
 			glPushMatrix();
 				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
 				
-				if (state == sTFthree && prevState == sTFtwo){
+				if (state == sTFtwo && prevState == sTFone){
 					if (left_shoulder_rot.z != TF_SHOULDER_ROT_V)
 						left_shoulder_rot.z += 10;
 					else{
-						state = sVEHICLE;
-						prevState = sTFthree;
+						state = sTFthree;
+						prevState = sTFtwo;
 					}
 				}
 				glRotatef(left_shoulder_rot.x, 1, 0, 0);
@@ -532,6 +544,15 @@ void draw_robot(){
 				glCallList(left_upper_arm);
 				glPushMatrix();
 					glTranslatef(0, -upper_arm_size.y, 0);
+					
+					if (state == sTFthree && prevState == sTFtwo){
+						if (left_elbow_angle != TF_ELBOW_ANGLE_V)
+							left_elbow_angle += 10;
+						else{
+							state = sVEHICLE;
+							prevState = sTFthree;
+						}
+					}
 					glRotatef(left_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(left_lower_arm);
 					glPushMatrix();
