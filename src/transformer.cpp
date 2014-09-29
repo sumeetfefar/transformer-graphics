@@ -2,6 +2,7 @@
 #include <GL/glu.h>
 #include <GL/gl.h>
 #include <math.h>
+#include <unistd.h>
 
 #define PI 3.1416
 
@@ -22,6 +23,25 @@
 #define left_foot 15
 #define hand_blade 16
 
+#define Y_ANGLE_DEFAULT -45
+#define X_ANGLE_DEFAULT 35.264
+
+//~ States of transition
+#define sHUMANOID -1
+#define sVEHICLE 0
+#define sTFone 1
+#define sTFtwo 2
+#define sTFthree 3
+
+#define TF_BASE_ROT_V 90
+#define TF_BASE_ROT_H 0
+
+#define TF_SHOULDER_ROT_V 120
+#define TF_SHOULDER_ROT_H 0
+
+#define TF_ELBOW_ANGLE_V 90
+#define TF_ELBOW_ANGLE_H 0
+
 class vector{
 	public:
 	float x, y, z;
@@ -34,10 +54,24 @@ class vector{
 		y = yy;
 		z = zz;
 	}
+	
+	void reset(){
+		x = 0;
+		y = 0;
+		z = 0;		
+	}
+	
+	void set(float xx, float yy, float zz){
+		x = xx;
+		y = yy;
+		z = zz;
+	}
 };
 
 float y_angle = -45;
 float x_angle = 35.264;
+
+int state = sHUMANOID, prevState = sHUMANOID;
 
 //~ float y_angle = 0;
 //~ float x_angle = 0;
@@ -59,6 +93,36 @@ vector right_hip_rot(0, 0, 0), left_hip_rot(0, 0, 0);
 vector right_hand_rot(0, 0, 0), left_hand_rot(0, 0, 0);
 vector right_foot_rot(0, 0, 0), left_foot_rot(0, 0, 0);
 
+float tf_base_rot = 0;
+
+
+
+//~ Go back to base position
+void reset_all_angles(){
+	neck_rot.reset();
+	right_shoulder_rot.reset(); left_shoulder_rot.reset();
+	right_hip_rot.reset(); left_hip_rot.reset();
+	right_hand_rot.reset(); left_hand_rot.reset();
+	right_foot_rot.reset(); left_foot_rot.reset();
+	
+	right_elbow_angle = 0; left_elbow_angle = 0;
+	right_knee_angle = 0; left_knee_angle = 0;
+	
+	x_angle = X_ANGLE_DEFAULT;
+	y_angle = Y_ANGLE_DEFAULT;
+}
+
+//~ Transform into vehicle
+void transform(){
+	prevState = sHUMANOID;
+	state = sTFone;
+}
+
+//~ Transform back into humanoid
+void untransform(){
+	prevState = sVEHICLE;
+	state = sTFthree;
+}
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -147,6 +211,7 @@ void drawCuboidSolid(float l, float b, float h){
     glVertex3f( -l/2, -b/2, -h/2 );
   glEnd();
 }
+
 void drawSphere(float r, float res){
 	for(int j=0; j<res; j++){
 		for(int i=0; i<res; i++){
@@ -470,6 +535,25 @@ void init_structures(){
 void draw_robot(){
 	glPushMatrix();
 		
+		if (state == sTFone && prevState == sHUMANOID){
+			if (tf_base_rot != TF_BASE_ROT_V)
+				tf_base_rot += 10;
+			else{
+				state = sTFtwo;
+				prevState = sTFone;
+			}
+		}
+		
+		if (state == sTFthree && prevState == sVEHICLE){
+			if (tf_base_rot != TF_BASE_ROT_H)
+				tf_base_rot -= 10;
+			else{
+				state = sHUMANOID;
+				prevState = sTFone;
+			}
+		}
+		glRotatef(tf_base_rot, 1, 0, 0);
+		
 		//~ Drawing the head and the neck
 		glPushMatrix();
 			glTranslatef(0, upper_torso_size.y/2, 0);
@@ -486,6 +570,8 @@ void draw_robot(){
 		glPopMatrix();
 		
 		//~ Torso
+		
+		
 		glCallList(torso);
 		
 		//~ Drawing the Upper Limbs 
@@ -495,12 +581,30 @@ void draw_robot(){
 			//~ Right Upper Limb - Upper arm, lower arm, hand
 			glPushMatrix();
 				glTranslatef(-upper_torso_size.x/2-upper_arm_size.x/2, 0, 0);
+				
+				if (state == sTFtwo && prevState == sTFone){
+					if (right_shoulder_rot.z != -TF_SHOULDER_ROT_V)
+						right_shoulder_rot.z -= 10;
+					else{
+						//~ state = ;
+						//~ prevState = sTFtwo;
+					}
+				}
 				glRotatef(right_shoulder_rot.x, 1, 0, 0);
 				glRotatef(right_shoulder_rot.y, 0, 1, 0);
 				glRotatef(right_shoulder_rot.z, 0, 0, 1);
 				glCallList(right_upper_arm);
 				glPushMatrix();
 					glTranslatef(0, -upper_arm_size.y, 0);
+					
+					if (state == sTFthree && prevState == sTFtwo){
+						if (right_elbow_angle != TF_ELBOW_ANGLE_V)
+							right_elbow_angle += 10;
+						else{
+							//~ state = ;
+							//~ prevState = sTFtwo;
+						}
+					}
 					glRotatef(right_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(right_lower_arm);
 					
@@ -525,12 +629,30 @@ void draw_robot(){
 			//~ Left Upper Limb - Upper arm, lower arm, hand
 			glPushMatrix();
 				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
+				
+				if (state == sTFtwo && prevState == sTFone){
+					if (left_shoulder_rot.z != TF_SHOULDER_ROT_V)
+						left_shoulder_rot.z += 10;
+					else{
+						state = sTFthree;
+						prevState = sTFtwo;
+					}
+				}
 				glRotatef(left_shoulder_rot.x, 1, 0, 0);
 				glRotatef(left_shoulder_rot.y, 0, 1, 0);
 				glRotatef(left_shoulder_rot.z, 0, 0, 1);
 				glCallList(left_upper_arm);
 				glPushMatrix();
 					glTranslatef(0, -upper_arm_size.y, 0);
+					
+					if (state == sTFthree && prevState == sTFtwo){
+						if (left_elbow_angle != TF_ELBOW_ANGLE_V)
+							left_elbow_angle += 10;
+						else{
+							state = sVEHICLE;
+							prevState = sTFthree;
+						}
+					}
 					glRotatef(left_elbow_angle, 1, 0, 0); // Elbow rotation
 					glCallList(left_lower_arm);
 					glPushMatrix();
@@ -773,6 +895,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		left_foot_rot.y -= 10;
 	else if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)
 		left_foot_rot.z -= 10;
+	
+	//~ Transform	
+	else if (key == GLFW_KEY_TAB && action == GLFW_PRESS){
+		if (state == sHUMANOID){
+			reset_all_angles();
+			transform();
+		}
+		else if (state == sVEHICLE)
+			untransform();
+	}
+	
 }
 
 int main(int argc, char** argv){
@@ -831,9 +964,14 @@ int main(int argc, char** argv){
 
 		// Swap front and back buffers
 		glfwSwapBuffers(window);
-
-		// Poll for and process events
-		glfwPollEvents();
+		
+		if ((state == sHUMANOID) || (state == sVEHICLE)){
+			// Poll for and process events
+			glfwPollEvents();
+		} else {
+			usleep(200000);
+			//~ right_hip_rot.set(20, 50, 82);
+		}
 	}
 
 	glfwTerminate();
