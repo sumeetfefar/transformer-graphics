@@ -93,6 +93,7 @@ float torso_width, torso_length;
 
 vector rotor_blade_cylinder(0.08, 0.05, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.1,180);
 vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
+vector knee_sphere(0.15, 90, 0);
 vector thigh_size(0.25, 0.4, 0.25), leg_size(0.22, 1.0, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
@@ -479,6 +480,7 @@ void struct_right_thigh(void){
 
 void struct_right_leg(void){
 	glNewList(right_leg, GL_COMPILE);
+		drawSphere(knee_sphere.x, knee_sphere.y);
 		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
@@ -491,6 +493,7 @@ void struct_left_thigh(void){
 
 void struct_left_leg(void){
 	glNewList(left_leg, GL_COMPILE);
+		drawSphere(knee_sphere.x, knee_sphere.y);
 		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
