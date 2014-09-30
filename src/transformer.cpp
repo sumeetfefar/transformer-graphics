@@ -69,6 +69,9 @@
 #define TF_HAND_ANGLE_V 90
 #define TF_HAND_ANGLE_H 0
 
+#define TF_FOOT_WING_ANGLE_V 0
+#define TF_FOOT_WING_ANGLE_H 90
+
 #define TF_DELAY_uS 100000
 
 class vector{
@@ -121,7 +124,12 @@ vector head_size(0.2, 0.3, 0.2);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
+
 int blade_direction = 180,heli_chest_rot=0, blade_gap=15;
+
+int blade_direction = 0,heli_chest_rot=0, blade_gap=20;
+float left_foot_wing_angle = 90, right_foot_wing_angle = 90;
+
 
 vector neck_rot(0, 0, 0);
 vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
@@ -1049,6 +1057,10 @@ void draw_robot(){
 					if(right_foot_rot.x < TF_FOOT_ANGLE_V){
 						right_foot_rot.x += 10;
 					}
+					
+					if(right_foot_wing_angle != TF_FOOT_WING_ANGLE_V){
+						right_foot_wing_angle -= 15;
+					}
 				}
 				if (state == sTFthree && prevState == sTFfour){
 					if (right_knee_angle != TF_KNEE_ANGLE_H)
@@ -1059,6 +1071,10 @@ void draw_robot(){
 					
 					if(right_foot_rot.x >= TF_FOOT_ANGLE_H){
 						right_foot_rot.x -= 10;
+					}
+					
+					if(right_foot_wing_angle != TF_FOOT_WING_ANGLE_H){
+						right_foot_wing_angle += 15;
 					}
 				}
 				
@@ -1088,7 +1104,7 @@ void draw_robot(){
 						//~ glRotatef(90,0,-1,0);
 						//~ glTranslatef(foot_size.x/2,0,0);
 						glTranslatef(-foot_size.x/2, -foot_size.y/2, foot_size.z/2);
-						glRotatef(90,0,0,-1);
+						glRotatef(right_foot_wing_angle,0,0,-1);
 						glCallList(right_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
@@ -1107,6 +1123,10 @@ void draw_robot(){
 					if(left_foot_rot.x < TF_FOOT_ANGLE_V){
 						left_foot_rot.x += 10;
 					}
+					
+					if(left_foot_wing_angle != TF_FOOT_WING_ANGLE_V){
+						left_foot_wing_angle -= 15;
+					}
 				}
 				if (state == sTFthree && prevState == sTFfour){
 					if (left_knee_angle != TF_KNEE_ANGLE_H)
@@ -1117,6 +1137,10 @@ void draw_robot(){
 					
 					if(left_foot_rot.x >= TF_FOOT_ANGLE_H){
 						left_foot_rot.x -= 10;
+					}
+					
+					if(left_foot_wing_angle != TF_FOOT_WING_ANGLE_H){
+						left_foot_wing_angle += 15;
 					}
 				}				
 
@@ -1147,7 +1171,7 @@ void draw_robot(){
 						//~ glTranslatef(-foot_size.x/2,0,0);
 						
 						glTranslatef(foot_size.x/2, -foot_size.y/2, foot_size.z/2);
-						glRotatef(90,0,0,1);
+						glRotatef(left_foot_wing_angle,0,0,1);
 						glCallList(left_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
