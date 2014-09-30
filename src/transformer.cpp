@@ -151,6 +151,32 @@ void reset_angles_H(){
 	y_angle = Y_ANGLE_DEFAULT;
 }
 
+void reset_angles_V(){
+	neck_rot.reset();
+	right_shoulder_rot.reset(); left_shoulder_rot.reset();
+	right_hip_rot.reset(); left_hip_rot.reset();
+	right_hand_rot.reset(); left_hand_rot.reset();
+	right_foot_rot.reset(); left_foot_rot.reset();
+	
+	right_elbow_angle = 0; left_elbow_angle = 0;
+	right_knee_angle = 0; left_knee_angle = 0;
+	
+	blade_gap = 0;
+	
+	x_angle = X_ANGLE_DEFAULT;
+	y_angle = Y_ANGLE_DEFAULT;
+	
+	tf_base_rot = TF_BASE_ROT_V;
+	heli_chest_rot = TF_HELI_CHEST_V;
+	neck_rot.x = -TF_NECK_ANGLE_V;
+	right_shoulder_rot.z = -TF_SHOULDER_ROT_V; left_shoulder_rot.z = TF_SHOULDER_ROT_V;
+	right_hand_rot.x = TF_HAND_ANGLE_V; left_hand_rot.x = TF_HAND_ANGLE_V;
+	blade_gap = TF_BLADE_GAP_V;
+	right_elbow_angle = TF_ELBOW_ANGLE_V; left_elbow_angle = TF_ELBOW_ANGLE_V;
+	right_knee_angle = TF_KNEE_ANGLE_V; left_knee_angle = TF_KNEE_ANGLE_V;
+	right_foot_rot.x = TF_FOOT_ANGLE_V; left_foot_rot.x = TF_FOOT_ANGLE_V;
+}
+
 //~ Transform into vehicle
 void transform(){
 	prevState = sHUMANOID;
@@ -649,39 +675,6 @@ void struct_blade_base(void){
 	glEndList();
 }
 
-//~ void struct_hand_blade(void){
-	//~ 
-	//~ glNewList(hand_blade, GL_COMPILE);
-		//~ 
-		//~ 
-		//~ drawCylinder(rotor_blade_cylinder.x,rotor_blade_cylinder.y,rotor_blade_cylinder.z);
-		//~ glPushMatrix();
-			//~ glTranslatef(0.04,0,0);
-			//~ glRotatef(blade_gap/2,0,0,1);
-			//~ glPushMatrix();
-				//~ glRotatef(blade_direction,0,1,0);
-				//~ drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
-				//~ glTranslatef(0,-rotor_blade_body.y,0);
-				//~ glRotatef(blade_direction,0,1,0);
-				//~ drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
-			//~ glPopMatrix();
-			//~ 
-		//~ glPopMatrix();
-		//~ glPushMatrix();
-			//~ glTranslatef(-0.04,0,0);
-			//~ glRotatef(-blade_gap/2,0,0,1);
-			//~ glPushMatrix();
-				//~ glRotatef(blade_direction,0,1,0);
-				//~ drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
-				//~ glTranslatef(0,-rotor_blade_body.y,0);
-				//~ glRotatef(blade_direction,0,1,0);
-				//~ drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
-			//~ glPopMatrix();
-			//~ 
-		//~ glPopMatrix();	
-	//~ glEndList();
-//~ }
-
 void struct_blade(void){
 	glNewList(blade, GL_COMPILE);
 		drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
@@ -706,7 +699,6 @@ void init_structures(){
 	struct_left_foot();
 	struct_right_hand();
 	struct_right_foot();
-	//~ struct_hand_blade();
 	struct_heli_chest();
 	struct_blade_base();
 	struct_blade();
@@ -1198,8 +1190,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			reset_angles_H();
 			transform();
 		}
-		else if (state == sVEHICLE)
+		else if (state == sVEHICLE){
+			reset_angles_V();
 			untransform();
+		}
 	}
 	
 }
