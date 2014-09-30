@@ -47,6 +47,9 @@
 #define TF_KNEE_ANGLE_V 60
 #define TF_KNEE_ANGLE_H 0
 
+#define TF_NECK_ANGLE_V 180
+#define TF_NECK_ANGLE_H 0
+
 #define TF_DELAY_uS 100000
 
 class vector{
@@ -596,6 +599,13 @@ void draw_robot(){
 				//~ std::cout<< "here\n";
 				if (tf_neck_translate.z >= -(upper_torso_size.z/2+head_size.z/2))
 					tf_neck_translate.z -= 0.05;
+				else{
+					//~ state = sVEHICLE;
+					//~ prevState = sTFfour;
+				}
+				
+				if (neck_rot.x != -TF_NECK_ANGLE_V)
+					neck_rot.x -= 10;
 				else{
 					state = sVEHICLE;
 					prevState = sTFfour;
