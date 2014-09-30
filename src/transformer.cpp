@@ -92,15 +92,20 @@ int state = sHUMANOID, prevState = sHUMANOID;
 float torso_width, torso_length;
 
 vector rotor_blade_cylinder(0.08, 0.08, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.08,180);
-vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
+vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.2, 0.5, 0.2), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
 vector knee_sphere(0.15, 90, 0);
 vector thigh_size(0.25, 0.4, 0.25), leg_size(0.22, 1.0, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
 
+vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3), upper_torso_front(0.8, 0.6, 0.3);
+vector head_size(0.3, 0.5, 0.3);
+//~ vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3);
+
+
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
-int blade_direction = 0,heli_chest=0, blade_gap=20;
+int blade_direction = 0,heli_chest=180, blade_gap=20;
 vector neck_rot(0, 0, 0);
 vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
 vector right_hip_rot(0, 0, 0), left_hip_rot(0, 0, 0);
