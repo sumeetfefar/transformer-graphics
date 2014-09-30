@@ -38,7 +38,7 @@
 #define TF_BASE_ROT_V 90
 #define TF_BASE_ROT_H 0
 
-#define TF_SHOULDER_ROT_V 120
+#define TF_SHOULDER_ROT_V 100
 #define TF_SHOULDER_ROT_H 0
 
 #define TF_ELBOW_ANGLE_V 90
@@ -46,6 +46,12 @@
 
 #define TF_KNEE_ANGLE_V 60
 #define TF_KNEE_ANGLE_H 0
+
+#define TF_NECK_ANGLE_V 180
+#define TF_NECK_ANGLE_H 0
+
+#define TF_FOOT_ANGLE_V 30
+#define TF_FOOT_ANGLE_H 0
 
 #define TF_DELAY_uS 100000
 
@@ -87,10 +93,10 @@ float torso_width, torso_length;
 
 vector rotor_blade_cylinder(0.08, 0.08, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.08,180);
 vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
-vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
+vector knee_sphere(0.15, 90, 0);
+vector thigh_size(0.25, 0.4, 0.25), leg_size(0.22, 1.0, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
-vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3), upper_torso_front(0.8, 0.6, 0.3);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
@@ -102,6 +108,8 @@ vector right_hand_rot(0, 0, 0), left_hand_rot(0, 0, 0);
 vector right_foot_rot(0, 0, 0), left_foot_rot(0, 0, 0);
 
 float tf_base_rot = 0;
+vector tf_neck_translate(0, 0, 0); 
+vector tf_left_leg_translt(0, 0, 0); vector tf_right_leg_translt(0, 0, 0);
 
 
 
@@ -427,9 +435,9 @@ void struct_head(void){
 	glNewList(head, GL_COMPILE);
 		glPushMatrix();
 			glColor4f(0.5, 0.0, 0.5, 1.0);
-			drawCuboidSolid(0.3,head_length,0.3);
+			drawCuboidSolid(head_size.x,head_size.y,head_size.z);
 			glPushMatrix();
-				glTranslatef(0, head_length/2 + 0.1, 0.15);
+				glTranslatef(0, head_size.y/2 + 0.1, head_size.z/2);
 				glColor4f(1, 1, 1, 1);
 				glPushMatrix();
 					glTranslatef(0.15, 0, 0);
@@ -517,6 +525,7 @@ void struct_right_thigh(void){
 
 void struct_right_leg(void){
 	glNewList(right_leg, GL_COMPILE);
+		drawSphere(knee_sphere.x, knee_sphere.y);
 		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
@@ -529,6 +538,7 @@ void struct_left_thigh(void){
 
 void struct_left_leg(void){
 	glNewList(left_leg, GL_COMPILE);
+		drawSphere(knee_sphere.x, knee_sphere.y);
 		drawCuboidEdgeYd(leg_size.x, leg_size.y, leg_size.z);
 	glEndList();
 }
@@ -570,6 +580,7 @@ void struct_right_foot(void){
 		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
 	glEndList();
 }
+
 void struct_hand_blade(void){
 	
 	glNewList(hand_blade, GL_COMPILE);
@@ -645,6 +656,23 @@ void draw_robot(){
 		
 		//~ Drawing the head and the neck
 		glPushMatrix();
+			if (state == sTFfour && prevState == sTFthree){
+				//~ std::cout<< "here\n";
+				if (tf_neck_translate.z > -(upper_torso_size.z/2+head_size.z/2))
+					tf_neck_translate.z -= 0.05;
+				else{
+					//~ state = sVEHICLE;
+					//~ prevState = sTFfour;
+				}
+				
+				if (neck_rot.x != -TF_NECK_ANGLE_V)
+					neck_rot.x -= 30;
+				else{
+					state = sVEHICLE;
+					prevState = sTFfour;
+				}
+			}
+			glTranslatef(tf_neck_translate.x, tf_neck_translate.y, tf_neck_translate.z);
 			glTranslatef(0, upper_torso_size.y/2, 0);
 			glRotatef(neck_rot.x, 1, 0, 0);
 			glRotatef(neck_rot.y, 0, 1, 0);
@@ -653,7 +681,7 @@ void draw_robot(){
 				glCallList(neck);
 			glPopMatrix();
 			glPushMatrix();
-				glTranslatef(0, neck_length + head_length/2, 0);
+				glTranslatef(0, neck_length + head_size.y/2, 0);
 				glCallList(head);
 			glPopMatrix();
 		glPopMatrix();
@@ -769,7 +797,28 @@ void draw_robot(){
 			
 			//~ Draw right - thigh, leg, foot
 			glPushMatrix();
+			
+				if (state == sTFfour && prevState == sTFthree){
+					if (right_knee_angle != TF_KNEE_ANGLE_V)
+						right_knee_angle += 10;
+					else{
+						//~ state = sVEHICLE;
+						//~ prevState = sTFthree;
+					}
+					
+					if (tf_right_leg_translt.x <= (lower_torso_size.x/2 - thigh_size.x))
+						tf_right_leg_translt.x += 0.05;
+					else{
+						
+					}
+					
+					if(right_foot_rot.x < TF_FOOT_ANGLE_V){
+						right_foot_rot.x += 10;
+					}
+				}
+				glTranslatef(tf_right_leg_translt.x, 0, 0);
 				glTranslatef(-lower_torso_size.x/2+thigh_size.x/2, 0, 0);
+				//~ glTranslatef(-thigh_size.x/2, 0, 0);
 				glRotatef(right_hip_rot.x, 1, 0, 0);
 				glRotatef(right_hip_rot.y, 0, 1, 0);
 				glRotatef(right_hip_rot.z, 0, 0, 1);
@@ -777,14 +826,7 @@ void draw_robot(){
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
 					
-					if (state == sTFfour && prevState == sTFthree){
-						if (right_knee_angle != TF_KNEE_ANGLE_V)
-							right_knee_angle += 10;
-						else{
-							//~ state = sVEHICLE;
-							//~ prevState = sTFthree;
-						}
-					}
+					
 					glRotatef(right_knee_angle, 1, 0, 0);
 					glCallList(right_leg);
 					glPushMatrix();
@@ -799,7 +841,28 @@ void draw_robot(){
 			
 			//~ Draw left - thigh, leg, foot
 			glPushMatrix();
+			
+				if (state == sTFfour && prevState == sTFthree){
+					if (left_knee_angle != TF_KNEE_ANGLE_V)
+						left_knee_angle += 10;
+					else{
+						
+					}
+					
+					if (tf_left_leg_translt.x >= -(lower_torso_size.x/2 - thigh_size.x))
+						tf_left_leg_translt.x -= 0.05;
+					else{
+						//~ state = sVEHICLE;
+						//~ prevState = sTFfour;
+					}
+					
+					if(left_foot_rot.x < TF_FOOT_ANGLE_V){
+						left_foot_rot.x += 10;
+					}
+				}
+				glTranslatef(tf_left_leg_translt.x, 0, 0);
 				glTranslatef(lower_torso_size.x/2-thigh_size.x/2, 0, 0);
+				//~ glTranslatef(+thigh_size.x/2, 0, 0);
 				glRotatef(left_hip_rot.x, 1, 0, 0);
 				glRotatef(left_hip_rot.y, 0, 1, 0);
 				glRotatef(left_hip_rot.z, 0, 0, 1);
@@ -807,14 +870,7 @@ void draw_robot(){
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
 					
-					if (state == sTFfour && prevState == sTFthree){
-						if (left_knee_angle != TF_KNEE_ANGLE_V)
-							left_knee_angle += 10;
-						else{
-							state = sVEHICLE;
-							prevState = sTFfour;
-						}
-					}
+					
 					glRotatef(left_knee_angle, 1, 0, 0);
 					glCallList(left_leg);
 					glPushMatrix();
@@ -1028,7 +1084,7 @@ int main(int argc, char** argv){
 	return -1;
 
 	//! Create a windowed mode window and its OpenGL context
-	window = glfwCreateWindow(800, 800, "CS475/CS675 OpenGL Framework", NULL, NULL);
+	window = glfwCreateWindow(800, 800, "CS475 Assignment 2.1 | 10D070048 | 10D070001", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
