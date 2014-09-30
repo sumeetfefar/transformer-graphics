@@ -50,6 +50,9 @@
 #define TF_NECK_ANGLE_V 180
 #define TF_NECK_ANGLE_H 0
 
+#define TF_FOOT_ANGLE_V 30
+#define TF_FOOT_ANGLE_H 0
+
 #define TF_DELAY_uS 100000
 
 class vector{
@@ -90,7 +93,7 @@ float torso_width, torso_length;
 
 vector rotor_blade_cylinder(0.08, 0.05, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.1,180);
 vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
-vector thigh_size(0.25, 0.4, 0.25), leg_size(0.22, 0.6, 0.22);
+vector thigh_size(0.25, 0.4, 0.25), leg_size(0.22, 1.0, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
 vector head_size(0.3, 0.5, 0.3);
@@ -751,6 +754,10 @@ void draw_robot(){
 					else{
 						
 					}
+					
+					if(right_foot_rot.x < TF_FOOT_ANGLE_V){
+						right_foot_rot.x += 10;
+					}
 				}
 				glTranslatef(tf_right_leg_translt.x, 0, 0);
 				glTranslatef(-lower_torso_size.x/2+thigh_size.x/2, 0, 0);
@@ -790,6 +797,10 @@ void draw_robot(){
 					else{
 						//~ state = sVEHICLE;
 						//~ prevState = sTFfour;
+					}
+					
+					if(left_foot_rot.x < TF_FOOT_ANGLE_V){
+						left_foot_rot.x += 10;
 					}
 				}
 				glTranslatef(tf_left_leg_translt.x, 0, 0);
