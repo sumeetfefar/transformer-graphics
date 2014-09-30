@@ -60,11 +60,11 @@
 #define TF_HELI_CHEST_V 180
 #define TF_HELI_CHEST_H 0
 
-#define TF_BLADE_DIRECTION_V 180
-#define TF_BLADE_DIRECTION_H 0
+#define TF_BLADE_DIRECTION_V 0
+#define TF_BLADE_DIRECTION_H 180
 
 #define TF_BLADE_GAP_V 180
-#define TF_BLADE_GAP_H 20
+#define TF_BLADE_GAP_H 15
 
 #define TF_HAND_ANGLE_V 90
 #define TF_HAND_ANGLE_H 0
@@ -121,7 +121,7 @@ vector head_size(0.2, 0.3, 0.2);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
-int blade_direction = 0,heli_chest_rot=0, blade_gap=20;
+int blade_direction = 180,heli_chest_rot=0, blade_gap=15;
 
 vector neck_rot(0, 0, 0);
 vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
@@ -876,8 +876,11 @@ void draw_robot(){
 						right_hand_rot.x += 30;
 					}
 					
-					if (blade_gap <= TF_BLADE_GAP_V){
-						blade_gap += 30;
+					if (blade_gap < TF_BLADE_GAP_V){
+						blade_gap += 20;
+					}
+					if (blade_direction > TF_BLADE_DIRECTION_V){
+						blade_direction -=45;
 					}
 				}
 				
@@ -890,7 +893,10 @@ void draw_robot(){
 					}
 					
 					if (blade_gap > TF_BLADE_GAP_H){
-						blade_gap -= 30;
+						 blade_gap -= 20;
+					}
+					if (blade_direction < TF_BLADE_DIRECTION_H){
+						blade_direction +=45;
 					}
 				}
 				glRotatef(right_shoulder_rot.x, 1, 0, 0);
@@ -928,6 +934,7 @@ void draw_robot(){
 							glPushMatrix();
 								glTranslatef(0.04,0,0);
 								glRotatef(blade_gap/2,0,0,1);
+								glRotatef(blade_direction,0,1,0);
 								glCallList(blade);
 							glPopMatrix();
 							glPushMatrix();
@@ -1010,6 +1017,7 @@ void draw_robot(){
 							glPushMatrix();
 								glTranslatef(0.04,0,0);
 								glRotatef(blade_gap/2,0,0,1);
+								glRotatef(blade_direction,0,1,0);
 								glCallList(blade);
 							glPopMatrix();
 							glPushMatrix();
