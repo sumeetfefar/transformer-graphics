@@ -1080,6 +1080,7 @@ void draw_robot(){
 						//~ glRotatef(90,0,-1,0);
 						//~ glTranslatef(foot_size.x/2,0,0);
 						glTranslatef(-foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+						glRotatef(90,0,0,-1);
 						glCallList(right_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
@@ -1136,7 +1137,9 @@ void draw_robot(){
 						//~ glTranslatef(0,0,-foot_size.z/2);
 						//~ glRotatef(90,0,1,0);
 						//~ glTranslatef(-foot_size.x/2,0,0);
+						
 						glTranslatef(foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+						glRotatef(90,0,0,1);
 						glCallList(left_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
