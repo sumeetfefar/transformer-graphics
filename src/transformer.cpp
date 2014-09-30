@@ -22,6 +22,9 @@
 #define right_foot 14
 #define left_foot 15
 #define hand_blade 16
+#define heli_chest 17
+#define blade_base 18
+#define blade 19
 
 #define Y_ANGLE_DEFAULT -45
 #define X_ANGLE_DEFAULT 35.264
@@ -52,6 +55,18 @@
 
 #define TF_FOOT_ANGLE_V 30
 #define TF_FOOT_ANGLE_H 0
+
+#define TF_HELI_CHEST_V 180
+#define TF_HELI_CHEST_H 0
+
+#define TF_BLADE_DIRECTION_V 180
+#define TF_BLADE_DIRECTION_H 0
+
+#define TF_BLADE_GAP_V 180
+#define TF_BLADE_GAP_H 20
+
+#define TF_HAND_ANGLE_V 90
+#define TF_HAND_ANGLE_H 0
 
 #define TF_DELAY_uS 100000
 
@@ -105,7 +120,7 @@ vector head_size(0.3, 0.5, 0.3);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
-int blade_direction = 0,heli_chest=180, blade_gap=20;
+int blade_direction = 0, heli_chest_rot = 0, blade_gap = 0;
 vector neck_rot(0, 0, 0);
 vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
 vector right_hip_rot(0, 0, 0), left_hip_rot(0, 0, 0);
@@ -469,21 +484,18 @@ void struct_neck(void){
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
 		drawCuboidSolid(upper_torso_size.x, upper_torso_size.y, upper_torso_size.z);
-		glPushMatrix();
-			glTranslatef(0, (upper_torso_size.y - upper_torso_front.y)/2, (upper_torso_size.z+upper_torso_front.z)/2);
-			
-			
-			glTranslatef(0, upper_torso_front.y/2, -upper_torso_front.z/2);
-			glRotatef(-heli_chest,1,0,0);
-			glTranslatef(0,-upper_torso_front.y/2, upper_torso_front.z/2);
-			drawCuboidTetrahedron(upper_torso_front.x, upper_torso_front.y, upper_torso_front.z);
-			glTranslatef(0,-upper_torso_front.y/2,-upper_torso_front.z/4);
-			drawCuboidTetrahedron(upper_torso_front.x/2, upper_torso_front.y, upper_torso_front.z/2);
-			
-		glPopMatrix();
-		
+				
 		glTranslatef(0, -lower_torso_size.y/2-upper_torso_size.y/2, 0);
 		drawCuboidSolid(lower_torso_size.x, lower_torso_size.y, lower_torso_size.z);
+	glEndList();
+}
+
+void struct_heli_chest(void){
+	glNewList(heli_chest, GL_COMPILE);
+		
+		drawCuboidTetrahedron(upper_torso_front.x, upper_torso_front.y, upper_torso_front.z);
+		glTranslatef(0,-upper_torso_front.y/2,-upper_torso_front.z/4);
+		drawCuboidTetrahedron(upper_torso_front.x/2, upper_torso_front.y, upper_torso_front.z/2);
 	glEndList();
 }
 
@@ -586,35 +598,50 @@ void struct_right_foot(void){
 	glEndList();
 }
 
-void struct_hand_blade(void){
-	
-	glNewList(hand_blade, GL_COMPILE);
-		
-		
-		//~ glTranslatef(0,rotor_blade_cylinder.y/2,0);
+void struct_blade_base(void){
+	glNewList(blade_base, GL_COMPILE);
 		drawCylinder(rotor_blade_cylinder.x,rotor_blade_cylinder.y,rotor_blade_cylinder.z);
-		glPushMatrix();
-			glTranslatef(0.04,0,0);
-			glRotatef(blade_gap/2,0,0,1);
-			glPushMatrix();
-				glRotatef(blade_direction,0,1,0);
-				drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
-			glPopMatrix();
-			glTranslatef(0,-rotor_blade_body.y,0);
-			glRotatef(blade_direction,0,1,0);
-			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-0.04,0,0);
-			glRotatef(-blade_gap/2,0,0,1);
-			glPushMatrix();
+	glEndList();
+}
+
+//~ void struct_hand_blade(void){
+	//~ 
+	//~ glNewList(hand_blade, GL_COMPILE);
+		//~ 
+		//~ 
+		//~ drawCylinder(rotor_blade_cylinder.x,rotor_blade_cylinder.y,rotor_blade_cylinder.z);
+		//~ glPushMatrix();
+			//~ glTranslatef(0.04,0,0);
+			//~ glRotatef(blade_gap/2,0,0,1);
+			//~ glPushMatrix();
 				//~ glRotatef(blade_direction,0,1,0);
-				drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
-			glPopMatrix();
-			glTranslatef(0,-rotor_blade_body.y,0);
-			//~ glRotatef(blade_direction,0,1,0);
-			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
-		glPopMatrix();	
+				//~ drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+				//~ glTranslatef(0,-rotor_blade_body.y,0);
+				//~ glRotatef(blade_direction,0,1,0);
+				//~ drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
+			//~ glPopMatrix();
+			//~ 
+		//~ glPopMatrix();
+		//~ glPushMatrix();
+			//~ glTranslatef(-0.04,0,0);
+			//~ glRotatef(-blade_gap/2,0,0,1);
+			//~ glPushMatrix();
+				//~ glRotatef(blade_direction,0,1,0);
+				//~ drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+				//~ glTranslatef(0,-rotor_blade_body.y,0);
+				//~ glRotatef(blade_direction,0,1,0);
+				//~ drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
+			//~ glPopMatrix();
+			//~ 
+		//~ glPopMatrix();	
+	//~ glEndList();
+//~ }
+
+void struct_blade(void){
+	glNewList(blade, GL_COMPILE);
+		drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+		glTranslatef(0,-rotor_blade_body.y,0);
+		drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
 	glEndList();
 }
 
@@ -634,7 +661,10 @@ void init_structures(){
 	struct_left_foot();
 	struct_right_hand();
 	struct_right_foot();
-	struct_hand_blade();
+	//~ struct_hand_blade();
+	struct_heli_chest();
+	struct_blade_base();
+	struct_blade();
 }
 
 void draw_robot(){
@@ -670,6 +700,10 @@ void draw_robot(){
 					//~ prevState = sTFfour;
 				}
 				
+				if (heli_chest_rot != TF_HELI_CHEST_V){
+					heli_chest_rot += 30;
+				}
+				
 				if (neck_rot.x != -TF_NECK_ANGLE_V)
 					neck_rot.x -= 30;
 				else{
@@ -695,6 +729,16 @@ void draw_robot(){
 		
 		
 		glCallList(torso);
+		glPushMatrix();
+			glTranslatef(0, lower_torso_size.y/2+upper_torso_size.y/2, 0);
+			glTranslatef(0, (upper_torso_size.y - upper_torso_front.y)/2, (upper_torso_size.z+upper_torso_front.z)/2);
+			glTranslatef(0, upper_torso_front.y/2, -upper_torso_front.z/2);
+			glRotatef(-heli_chest_rot,1,0,0);
+			glTranslatef(0,-upper_torso_front.y/2, upper_torso_front.z/2);
+			glCallList(heli_chest);
+		glPopMatrix();
+		
+		
 		
 		//~ Drawing the Upper Limbs 
 		glPushMatrix();
@@ -711,6 +755,20 @@ void draw_robot(){
 						//~ state = ;
 						//~ prevState = sTFtwo;
 					}
+					
+					//~ if (blade_direction != TF_BLADE_DIRECTION_V){
+						//~ blade_direction += 30;
+					//~ }
+					
+					if (right_hand_rot.x != TF_HAND_ANGLE_V){
+						right_hand_rot.x += 30;
+					}
+					
+					if (blade_gap != TF_BLADE_GAP_V){
+						blade_gap += 30;
+					}
+					
+					
 				}
 				glRotatef(right_shoulder_rot.x, 1, 0, 0);
 				glRotatef(right_shoulder_rot.y, 0, 1, 0);
@@ -742,7 +800,17 @@ void draw_robot(){
 						glRotatef(right_hand_rot.z, 0, 0, 1);
 						glTranslatef(0,0,0.06);
 						glPushMatrix();
-							glCallList(hand_blade);
+							glCallList(blade_base);
+							glPushMatrix();
+								glTranslatef(0.04,0,0);
+								glRotatef(blade_gap/2,0,0,1);
+								glCallList(blade);
+							glPopMatrix();
+							glPushMatrix();
+								glTranslatef(-0.04,0,0);
+								glRotatef(-blade_gap/2,0,0,1);
+								glCallList(blade);
+							glPopMatrix();
 						glPopMatrix();
 					glPopMatrix();
 				glPopMatrix();
@@ -753,6 +821,10 @@ void draw_robot(){
 				glTranslatef(upper_torso_size.x/2+upper_arm_size.x/2, 0, 0);
 				
 				if (state == sTFtwo && prevState == sTFone){
+					if (left_hand_rot.x != TF_HAND_ANGLE_V){
+						left_hand_rot.x += 30;
+					}
+					
 					if (left_shoulder_rot.z != TF_SHOULDER_ROT_V)
 						left_shoulder_rot.z += 10;
 					else{
@@ -788,7 +860,17 @@ void draw_robot(){
 						glRotatef(left_hand_rot.z, 0, 0, 1);
 						glTranslatef(0,0,0.06);
 						glPushMatrix();
-							glCallList(hand_blade);
+							glCallList(blade_base);
+							glPushMatrix();
+								glTranslatef(0.04,0,0);
+								glRotatef(blade_gap/2,0,0,1);
+								glCallList(blade);
+							glPopMatrix();
+							glPushMatrix();
+								glTranslatef(-0.04,0,0);
+								glRotatef(-blade_gap/2,0,0,1);
+								glCallList(blade);
+							glPopMatrix();
 						glPopMatrix();
 					glPopMatrix();
 				glPopMatrix();
