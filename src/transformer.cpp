@@ -25,6 +25,8 @@
 #define heli_chest 17
 #define blade_base 18
 #define blade 19
+#define right_foot_wing 20
+#define left_foot_wing 21
 
 #define Y_ANGLE_DEFAULT -45
 #define X_ANGLE_DEFAULT 35.264
@@ -110,7 +112,7 @@ vector rotor_blade_cylinder(0.08, 0.08, 180), rotor_blade_body(0.05, 0.4, 0), ro
 vector upper_arm_size(0.15, 0.7, 0.15), lower_arm_size(0.2, 0.5, 0.2), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
 vector knee_cylinder(0.15, 0.25, 90);
 vector thigh_size(0.25, 0.5, 0.25), leg_size(0.22, 0.6, 0.22);
-vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
+vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4), foot_fin(0.5,0.2,0);
 float head_length = 0.5, neck_length = 0.15;
 
 vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3), upper_torso_front(0.8, 0.6, 0.3);
@@ -621,6 +623,40 @@ void struct_left_hand(void){
 void struct_left_foot(void){
 	glNewList(left_foot, GL_COMPILE);
 		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
+		//~ glTranslatef(foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+		//~ glBegin(GL_QUADS);
+			//~ glNormal3f(0,-1,0);
+			//~ glVertex3f(0,0,0);
+			//~ glVertex3f(0,0,-foot_size.z);
+			//~ glVertex3f(foot_fin.x,0,-foot_size.z + foot_fin.y);
+			//~ glVertex3f(foot_fin.x,0,0);
+			//~ 
+			//~ glNormal3f(0,1,0);
+			//~ glVertex3f(foot_fin.x,0,0);
+			//~ glVertex3f(foot_fin.x,0,-foot_size.z + foot_fin.y);
+			//~ glVertex3f(0,0,-foot_size.z);
+			//~ glVertex3f(0,0,0);
+		//~ glEnd();
+	glEndList();
+}
+
+void struct_left_foot_wing(void){
+	glNewList(left_foot_wing, GL_COMPILE);
+		
+		//~ glTranslatef(foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+		glBegin(GL_QUADS);
+			glNormal3f(0,-1,0);
+			glVertex3f(0,0,0);
+			glVertex3f(0,0,-foot_size.z);
+			glVertex3f(foot_fin.x,0,-foot_size.z + foot_fin.y);
+			glVertex3f(foot_fin.x,0,0);
+			
+			glNormal3f(0,1,0);
+			glVertex3f(foot_fin.x,0,0);
+			glVertex3f(foot_fin.x,0,-foot_size.z + foot_fin.y);
+			glVertex3f(0,0,-foot_size.z);
+			glVertex3f(0,0,0);
+		glEnd();
 	glEndList();
 }
 
@@ -640,6 +676,40 @@ void struct_right_hand(void){
 void struct_right_foot(void){
 	glNewList(right_foot, GL_COMPILE);
 		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
+		//~ glTranslatef(-foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+		//~ glBegin(GL_QUADS);
+			//~ glNormal3f(0,1,0);
+			//~ glVertex3f(0,0,0);
+			//~ glVertex3f(0,0,-foot_size.z);
+			//~ glVertex3f(-foot_fin.x,0,-foot_size.z + foot_fin.y);
+			//~ glVertex3f(-foot_fin.x,0,0);
+			//~ 
+			//~ glNormal3f(0,-1,0);
+			//~ glVertex3f(-foot_fin.x,0,0);
+			//~ glVertex3f(-foot_fin.x,0,-foot_size.z + foot_fin.y);
+			//~ glVertex3f(0,0,-foot_size.z);
+			//~ glVertex3f(0,0,0);
+		//~ glEnd();
+		
+	glEndList();
+}
+void struct_right_foot_wing(void){
+	glNewList(right_foot_wing, GL_COMPILE);
+		//~ glTranslatef(-foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+		glBegin(GL_QUADS);
+			glNormal3f(0,1,0);
+			glVertex3f(0,0,0);
+			glVertex3f(0,0,-foot_size.z);
+			glVertex3f(-foot_fin.x,0,-foot_size.z + foot_fin.y);
+			glVertex3f(-foot_fin.x,0,0);
+			
+			glNormal3f(0,-1,0);
+			glVertex3f(-foot_fin.x,0,0);
+			glVertex3f(-foot_fin.x,0,-foot_size.z + foot_fin.y);
+			glVertex3f(0,0,-foot_size.z);
+			glVertex3f(0,0,0);
+		glEnd();
+		
 	glEndList();
 }
 
@@ -710,6 +780,8 @@ void init_structures(){
 	struct_heli_chest();
 	struct_blade_base();
 	struct_blade();
+	struct_left_foot_wing();
+	struct_right_foot_wing();
 }
 
 void draw_robot(){
@@ -967,6 +1039,14 @@ void draw_robot(){
 						glRotatef(right_foot_rot.y, 0, 1, 0);
 						glRotatef(right_foot_rot.z, 0, 0, 1);
 						glCallList(right_foot);
+						
+						//~ glTranslatef(0,foot_fin.x/2,0);
+						//~ glRotatef(90,0,0,-1);
+						//~ glTranslatef(0,0,-foot_size.z/2);
+						//~ glRotatef(90,0,-1,0);
+						//~ glTranslatef(foot_size.x/2,0,0);
+						glTranslatef(-foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+						glCallList(right_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
 			glPopMatrix();
@@ -1011,6 +1091,14 @@ void draw_robot(){
 						glRotatef(left_foot_rot.y, 0, 1, 0);
 						glRotatef(left_foot_rot.z, 0, 0, 1);
 						glCallList(left_foot);
+						
+						//~ glTranslatef(0,foot_fin.x/2,0);
+						//~ glRotatef(90,0,0,1);
+						//~ glTranslatef(0,0,-foot_size.z/2);
+						//~ glRotatef(90,0,1,0);
+						//~ glTranslatef(-foot_size.x/2,0,0);
+						glTranslatef(foot_size.x/2, -foot_size.y/2, foot_size.z/2);
+						glCallList(left_foot_wing);
 					glPopMatrix();
 				glPopMatrix();
 			glPopMatrix();
