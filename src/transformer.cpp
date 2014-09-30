@@ -127,7 +127,6 @@ float right_knee_angle = 0, left_knee_angle = 0;
 
 int blade_direction = 180,heli_chest_rot=0, blade_gap=15;
 
-int blade_direction = 0,heli_chest_rot=0, blade_gap=20;
 float left_foot_wing_angle = 90, right_foot_wing_angle = 90;
 
 
