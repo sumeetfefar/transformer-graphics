@@ -85,15 +85,16 @@ int state = sHUMANOID, prevState = sHUMANOID;
 
 float torso_width, torso_length;
 
-vector rotor_blade_cylinder(0.08, 0.05, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.1,180);
+vector rotor_blade_cylinder(0.08, 0.08, 180), rotor_blade_body(0.05, 0.4, 0), rotor_blade_tip(0, 0.1, 0), rotor_base_cylinder(0.06,0.08,180);
 vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_arm_cylinder(0.1, 0.16, 180), upper_arm_sphere(0.2, 90,0);
 vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
-vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3);
+vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3), upper_torso_front(0.8, 0.6, 0.3);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
 float right_knee_angle = 0, left_knee_angle = 0;
+int blade_direction = 0,heli_chest=0, blade_gap=20;
 vector neck_rot(0, 0, 0);
 vector right_shoulder_rot(0, 0, 0), left_shoulder_rot(0, 0, 0);
 vector right_hip_rot(0, 0, 0), left_hip_rot(0, 0, 0);
@@ -156,6 +157,40 @@ void drawTetrahedron(float s){
 
     glEnd();
 }
+
+void drawCuboidTetrahedron(float l, float b, float h){
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_TRIANGLES);
+    
+	    glNormal3f(0, 0, -1); // Back
+	    glVertex3f( 0, -b/2, -h/2 );
+	    glVertex3f( -l/2,  b/2, -h/2 );
+	    glVertex3f(  l/2,  b/2, -h/2 );
+	    
+	    
+	    //~ glNormal3f(1, 0, 0);// RIGHT
+	    float face_norm = sqrt(b*h*b*h+ l*h*l*h + l*b*l*b);
+	    glNormal3f(b*h/face_norm, l*h/face_norm, l*b/face_norm);
+	    glVertex3f( 0,  b/2,  h/2 );
+	    glVertex3f( 0, -b/2, -h/2 );
+	    glVertex3f(  l/2,  b/2, -h/2 );
+	    
+	    //~ glNormal3f(-1, 0, 0);// LEFT
+	    glNormal3f(-b*h/face_norm, l*h/face_norm, l*b/face_norm);
+	    glVertex3f(  -l/2,  b/2, -h/2 );
+	    glVertex3f( 0, -b/2, -h/2 );
+	    glVertex3f(  0,  b/2,  h/2 );
+	    
+	    // glColor4f(1,0,1,1);
+	    glNormal3f(0, 1, 0);// TOP
+	    glVertex3f(  0,  b/2,  h/2 );
+	    glVertex3f(  l/2,  b/2, -h/2 );
+	    glVertex3f( -l/2,  b/2, -h/2 );
+	    
+  
+  glEnd();
+}
+
 
 void drawCubeWireframe(){
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -421,6 +456,18 @@ void struct_neck(void){
 void struct_torso(void){
 	glNewList(torso, GL_COMPILE);
 		drawCuboidSolid(upper_torso_size.x, upper_torso_size.y, upper_torso_size.z);
+		glPushMatrix();
+			glTranslatef(0, (upper_torso_size.y - upper_torso_front.y)/2, (upper_torso_size.z+upper_torso_front.z)/2);
+			
+			
+			glTranslatef(0, upper_torso_front.y/2, -upper_torso_front.z/2);
+			glRotatef(-heli_chest,1,0,0);
+			glTranslatef(0,-upper_torso_front.y/2, upper_torso_front.z/2);
+			drawCuboidTetrahedron(upper_torso_front.x, upper_torso_front.y, upper_torso_front.z);
+			glTranslatef(0,-upper_torso_front.y/2,-upper_torso_front.z/4);
+			drawCuboidTetrahedron(upper_torso_front.x/2, upper_torso_front.y, upper_torso_front.z/2);
+			
+		glPopMatrix();
 		
 		glTranslatef(0, -lower_torso_size.y/2-upper_torso_size.y/2, 0);
 		drawCuboidSolid(lower_torso_size.x, lower_torso_size.y, lower_torso_size.z);
@@ -532,15 +579,24 @@ void struct_hand_blade(void){
 		drawCylinder(rotor_blade_cylinder.x,rotor_blade_cylinder.y,rotor_blade_cylinder.z);
 		glPushMatrix();
 			glTranslatef(0.04,0,0);
-			drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glRotatef(blade_gap/2,0,0,1);
+			glPushMatrix();
+				glRotatef(blade_direction,0,1,0);
+				drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glPopMatrix();
 			glTranslatef(0,-rotor_blade_body.y,0);
-			glRotatef(180,0,1,0);
+			glRotatef(blade_direction,0,1,0);
 			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
 		glPopMatrix();
 		glPushMatrix();
 			glTranslatef(-0.04,0,0);
-			drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glRotatef(-blade_gap/2,0,0,1);
+			glPushMatrix();
+				//~ glRotatef(blade_direction,0,1,0);
+				drawCuboidEdgeYd(rotor_blade_body.x, rotor_blade_body.y, rotor_blade_body.z);
+			glPopMatrix();
 			glTranslatef(0,-rotor_blade_body.y,0);
+			//~ glRotatef(blade_direction,0,1,0);
 			drawPrism(rotor_blade_body.x, rotor_blade_tip.y, rotor_blade_body.z);
 		glPopMatrix();	
 	glEndList();
@@ -832,9 +888,9 @@ void renderGL(void){
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
 	
-	//~ draw_robot();
+	draw_robot();
 	//~ drawSphere(0.5,60);
-	drawTetrahedron(1);
+	//~ drawTetrahedron(1);
 	
 }
 
