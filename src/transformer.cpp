@@ -90,6 +90,7 @@ vector upper_arm_size(0.15, 0.6, 0.15), lower_arm_size(0.11, 0.5, 0.11), lower_a
 vector thigh_size(0.25, 0.6, 0.25), leg_size(0.22, 0.6, 0.22);
 vector hand_size(0.1, 0.03, 0.15), foot_size(0.22, 0.1, 0.4);
 float head_length = 0.5, neck_length = 0.2;
+vector head_size(0.3, 0.5, 0.3);
 vector upper_torso_size( 0.8, 0.5, 0.3), lower_torso_size(0.6, 0.4, 0.3);
 
 float right_elbow_angle = 0, left_elbow_angle = 0;
@@ -101,6 +102,7 @@ vector right_hand_rot(0, 0, 0), left_hand_rot(0, 0, 0);
 vector right_foot_rot(0, 0, 0), left_foot_rot(0, 0, 0);
 
 float tf_base_rot = 0;
+vector tf_neck_translate(0, 0, 0);
 
 
 
@@ -392,9 +394,9 @@ void struct_head(void){
 	glNewList(head, GL_COMPILE);
 		glPushMatrix();
 			glColor4f(0.5, 0.0, 0.5, 1.0);
-			drawCuboidSolid(0.3,head_length,0.3);
+			drawCuboidSolid(head_size.x,head_size.y,head_size.z);
 			glPushMatrix();
-				glTranslatef(0, head_length/2 + 0.1, 0.15);
+				glTranslatef(0, head_size.y/2 + 0.1, head_size.z/2);
 				glColor4f(1, 1, 1, 1);
 				glPushMatrix();
 					glTranslatef(0.15, 0, 0);
@@ -523,6 +525,7 @@ void struct_right_foot(void){
 		drawCuboidSolid(foot_size.x, foot_size.y, foot_size.z);
 	glEndList();
 }
+
 void struct_hand_blade(void){
 	
 	glNewList(hand_blade, GL_COMPILE);
@@ -589,6 +592,16 @@ void draw_robot(){
 		
 		//~ Drawing the head and the neck
 		glPushMatrix();
+			if (state == sTFfour && prevState == sTFthree){
+				//~ std::cout<< "here\n";
+				if (tf_neck_translate.z >= -(upper_torso_size.z/2+head_size.z/2))
+					tf_neck_translate.z -= 0.05;
+				else{
+					state = sVEHICLE;
+					prevState = sTFfour;
+				}
+			}
+			glTranslatef(tf_neck_translate.x, tf_neck_translate.y, tf_neck_translate.z);
 			glTranslatef(0, upper_torso_size.y/2, 0);
 			glRotatef(neck_rot.x, 1, 0, 0);
 			glRotatef(neck_rot.y, 0, 1, 0);
@@ -597,7 +610,7 @@ void draw_robot(){
 				glCallList(neck);
 			glPopMatrix();
 			glPushMatrix();
-				glTranslatef(0, neck_length + head_length/2, 0);
+				glTranslatef(0, neck_length + head_size.y/2, 0);
 				glCallList(head);
 			glPopMatrix();
 		glPopMatrix();
@@ -721,14 +734,14 @@ void draw_robot(){
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
 					
-					if (state == sTFfour && prevState == sTFthree){
-						if (right_knee_angle != TF_KNEE_ANGLE_V)
-							right_knee_angle += 10;
-						else{
+					//~ if (state == sTFfour && prevState == sTFthree){
+						//~ if (right_knee_angle != TF_KNEE_ANGLE_V)
+							//~ right_knee_angle += 10;
+						//~ else{
 							//~ state = sVEHICLE;
 							//~ prevState = sTFthree;
-						}
-					}
+						//~ }
+					//~ }
 					glRotatef(right_knee_angle, 1, 0, 0);
 					glCallList(right_leg);
 					glPushMatrix();
@@ -751,14 +764,14 @@ void draw_robot(){
 				glPushMatrix();
 					glTranslatef(0, -thigh_size.y, 0);
 					
-					if (state == sTFfour && prevState == sTFthree){
-						if (left_knee_angle != TF_KNEE_ANGLE_V)
-							left_knee_angle += 10;
-						else{
-							state = sVEHICLE;
-							prevState = sTFfour;
-						}
-					}
+					//~ if (state == sTFfour && prevState == sTFthree){
+						//~ if (left_knee_angle != TF_KNEE_ANGLE_V)
+							//~ left_knee_angle += 10;
+						//~ else{
+							//~ state = sVEHICLE;
+							//~ prevState = sTFfour;
+						//~ }
+					//~ }
 					glRotatef(left_knee_angle, 1, 0, 0);
 					glCallList(left_leg);
 					glPushMatrix();
@@ -832,9 +845,9 @@ void renderGL(void){
 		//~ glCallList(right_leg);
 	//~ glPopMatrix();
 	
-	//~ draw_robot();
+	draw_robot();
 	//~ drawSphere(0.5,60);
-	drawTetrahedron(1);
+	//~ drawTetrahedron(1);
 	
 }
 
@@ -972,7 +985,7 @@ int main(int argc, char** argv){
 	return -1;
 
 	//! Create a windowed mode window and its OpenGL context
-	window = glfwCreateWindow(800, 800, "CS475/CS675 OpenGL Framework", NULL, NULL);
+	window = glfwCreateWindow(800, 800, "CS475 Assignment 2.1 | 10D070048 | 10D070001", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
