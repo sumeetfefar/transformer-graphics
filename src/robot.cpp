@@ -59,7 +59,7 @@ float tf_base_rot = 0;
 vector tf_neck_translate(0, 0, 0); 
 vector tf_left_leg_translt(0, 0, 0); vector tf_right_leg_translt(0, 0, 0);
 
-vector color_dark(0.3,0.3,0.3), color_grey(0.7,0.7,0.7), color_light(0.9,0.9,0.9), color_red(0.5,0,0);
+vector color_dark(0.3,0.3,0.3), color_grey(0.7,0.7,0.7), color_light(1,1,0.9), color_red(0.5,0,0);
 
 //~ Go back to base position in sHUMANOID
 void reset_angles_H(){
@@ -451,7 +451,6 @@ void init_structures(){
 }
 
 void draw_robot(){
-	
 	glPushMatrix();
 		
 		if (state == sTFone && prevState == sHUMANOID){

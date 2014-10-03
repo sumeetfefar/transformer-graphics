@@ -7,7 +7,7 @@
 #include <GL/gl.h>
 #include <math.h>
 #include <unistd.h>
-
+#include <GLFW/glfw3.h>
 
 #define PI 3.1416
 
